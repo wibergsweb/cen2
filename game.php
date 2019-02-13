@@ -2,6 +2,10 @@
 require_once('piece.php');
 require_once('pawn.php');
 require_once('rook.php');
+require_once('knight.php');
+require_once('bishop.php');
+require_once('queen.php');
+require_once('king.php');
 require_once('board.php');
 
 class Game {
