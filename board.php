@@ -1,7 +1,16 @@
 <?php
-
 class Board {
     private $grid_positions = array();
+    
+    public function get_gridpositions() {
+        return $this->grid_positions;
+    }    
+    
+    public function get_piece($x,$y) {
+        $gp = $this->get_gridpositions();
+        return $gp[$x][$y];     
+    }    
+    
     public function game_start() {
   
         for($y=0;$y<8;$y++) {

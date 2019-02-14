@@ -22,5 +22,14 @@ class Game {
         $this->boardobj->game_start();
         echo $this->boardobj->output_html();
     }
+    
+    public function user_response($x,$y) {
+        $piece = $this->boardobj->get_piece($x, $y);
+        return $piece;
+    }
+    
 }
 $game = new Game();
+echo '<pre>';
+var_dump ($game->user_response(4,6));
+echo '</pre>';
