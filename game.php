@@ -19,7 +19,7 @@ class Game {
     public function __construct($forward = -1) {
         $backward = -abs($forward);
         $this->boardobj = new board();
-        $this->boardobj->new_game();
+        $this->boardobj->game_start();
         echo $this->boardobj->output_html();
     }
 }

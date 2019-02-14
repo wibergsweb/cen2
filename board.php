@@ -2,11 +2,11 @@
 
 class Board {
     private $grid_positions = array();
-    public function new_game() {
+    public function game_start() {
   
         for($y=0;$y<8;$y++) {
             for($x=0;$x<8;$x++) {            
-                $this->grid_positions[$x][$y] = 0;
+                $this->grid_positions[$x][$y] = null;
             }
         }
 
@@ -59,7 +59,7 @@ class Board {
                     }
                     $html_board .= '<div id="chessindex-' . $index . '" style="text-align:center;width:100px;height:100px;font-size:64px;float:left;background:' . $col . '">';
                     $square_content = $this->grid_positions[$x][$y];
-                    if ( $square_content !== 0 ) {
+                    if ( $square_content !== null ) {
                         $html_board .= $this->grid_positions[$x][$y]->get_char();
                     }
                     else {
