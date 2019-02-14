@@ -11,6 +11,10 @@ class Board {
         return $gp[$x][$y];     
     }    
     
+    public function renew($gridpos) {
+        $this->grid_positions = array_slice($gridpos, 0, count($gridpos));        
+    }
+    
     public function game_start() {
   
         for($y=0;$y<8;$y++) {

@@ -1,6 +1,6 @@
 <?php
 abstract class Piece {
-    public $movement_pattern = array();
+    public $first_move = true;
     public $color; //0 = black, 1 = white
 
     public function get_color() {
@@ -8,7 +8,7 @@ abstract class Piece {
     }
     
     //This validation is done in each piece-class (pawn, knight, bishop etc)
-    abstract public function validate_move();
+    abstract public function get_validmoves($gridpositions, $x,$y);
     
     //Get chess character
     abstract protected function get_char();

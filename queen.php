@@ -21,7 +21,7 @@ class Queen extends Piece {
         return $mp;
     }
     
-    public function validate_move() {        
+    public function get_validmoves($gridpositions, $x,$y) {        
     }
     
     //Get chess character

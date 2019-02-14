@@ -1,37 +1,81 @@
 <?php
 class Pawn extends Piece {    
-    //private bool color (0=black,1=white)
-    //private bool first_move (true/false)
     //private bool final_row (true/false)
-
-    //move_pattern (forward=1, backward=0, left=0, right=0)
     //threat() → change move_pattern  (forward=1, backward=0, left=1, right=1)
-    //firstmove() → change move_pattern (forward = 1 or 2, backward=0, left=0, right=0)
-    //available_moves(); //based on move_pattern() and range
     
-    public $forward_diagonal_left = true;
-    public $forward_diagonal_right = true;
+    public $forward_diagonal_left = false;
+    public $forward_diagonal_right = false;
     public $forward = true;
-    public $move_steps;
-    public $available_moves = array();
+    public $move_steps = 2;
     
     public function __construct($color) {
             $this->color = $color;
+    }
+
+    
+    public function not_first_move() {
+        $this->first_move = false;
+    }
+    
+    
+    public function get_validmoves($gridpositions, $x,$y) {
+        $this->forward = true;
+         
+        if ($this->first_move===false) {
             $this->move_steps = 1;
-            $this->move_pattern();       
-            $this->available_moves();
+        }
+        $valid_moves = array();
+        //Check normal movepattern
+        for($i=1;$i<$this->move_steps+1;$i++) {
+            $check_piece = $gridpositions[$x][$y-$i];
+            if ($check_piece == null) {
+                $valid_moves[] = array($x,$y-$i);
+            }
+        }
+        
+
+        $check_piece_diagonal_left = $gridpositions[$x-1][$y-1];
+        $check_piece_diagonal_right = $gridpositions[$x+1][$y-1];
+
+        if ($check_piece_diagonal_left !== null) {
+            $piece_color = $check_piece_diagonal_left->get_color();
+            if ($piece_color===0 && !$check_piece_diagonal_left instanceof King) {
+                $valid_moves[] = array($x-1,$y-1);
+            }
+        }
+
+        if ($check_piece_diagonal_right !== null) {
+            $piece_color = $check_piece_diagonal_right->get_color();
+            if ($piece_color===0 && !$check_piece_diagonal_right instanceof King) {
+                $valid_moves[] = array($x+1,$y-1);
+            }
+        }
+        
+        return $valid_moves;
     }
     
-    public function move_pattern() {
-        $mp = array(-1,0,0,0);
-        return $mp;
-    }
     
-    public function available_moves() {
-        $this->available_moves = array(4,5,1,2); //TEMP
-    }
-    
-    public function validate_move() {        
+    public function get_aftermove($gridpositions, $x,$y) {
+        if ($y>0) {
+            $check_piece_diagonal_left = $gridpositions[$x-1][$y-1];
+            $check_piece_diagonal_right = $gridpositions[$x+1][$y-1];
+
+            if ($check_piece_diagonal_left !== null) {
+                $piece_color = $check_piece_diagonal_left->get_color();
+                if ($piece_color===0 && $check_piece_diagonal_left instanceof King) {
+                    return 'chess';
+                }
+            }
+
+            if ($check_piece_diagonal_right !== null) {
+                $piece_color = $check_piece_diagonal_right->get_color();
+                if ($piece_color===0 && $check_piece_diagonal_right instanceof King) {
+                    return 'chess';
+                }
+            }       
+        }
+        
+        return 'OK';
     }
     
     //Get chess character

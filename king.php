@@ -8,15 +8,9 @@ class King extends Piece {
     
     public function __construct($color) {
             $this->color = $color;
-            $this->move_pattern();            
     }
     
-    private function move_pattern() {
-        $mp = array(1,1,1,1);
-        return $mp;
-    }
-    
-    public function validate_move() {        
+    public function get_validmoves($gridpositions, $x,$y) {        
     }
     
     //Get chess character
