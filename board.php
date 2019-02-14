@@ -68,12 +68,7 @@ class Board {
                     $html_board .= '</div>';
                     $index++;
             }
-            if ($last_icolor == 0) {
-                $icolor = 0;
-            }
-            else {
-                $icolor = 1;
-            }
+            $icolor = $last_icolor;
             $html_board .= '<div style="clear:both;"></div>';
         }
        return $html_board;
