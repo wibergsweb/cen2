@@ -6,10 +6,10 @@ require_once('knight.php');
 require_once('bishop.php');
 require_once('queen.php');
 require_once('king.php');
+require_once('passant.php');
 require_once('board.php');
 
 class Game {
-    private $forward=-1, $backward = 0;
     private $boardobj;
     private $whos_turn;
     private $gridpos;
@@ -54,20 +54,29 @@ class Game {
         }        
 
         $this->gridpos[$x1][$y1] = null;
-        $active_piece->not_first_move();
         $this->gridpos[$x2][$y2] = $active_piece;
         
         $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
         echo '<b>' .$after_move .'</b>';
         
+        $passant = $active_piece->get_passantsquare();
+        if ($passant !== null) {
+            echo 'passsant';
+            $passant_color = $passant[0];
+            $passant_x = $passant[1];
+            $passant_y = $passant[2];
+            $this->gridpos[$passant_x][$passant_y] = new Passant($passant_color);            
+        }
+        
         if ($active_piece->get_waituser() === false) {
+            $active_piece->not_first_move();
             $this->boardobj->renew($this->gridpos);
             $this->draw();
         }        
         
     }
     
-    public function player_has_chosenpiece($piece,$x,$y) {
+    public function player_has_chosenpiece($piece,$x,$y) {        
         $this->gridpos[$x][$y] = $piece;
         $this->boardobj->renew($this->gridpos);
         $this->draw();    
@@ -83,15 +92,22 @@ class Game {
 $game = new Game();
 
 $game->move_to(4,6,4,4); //white
-$game->move_to(4,1,4,2); //black
+$game->move_to(4,1,4,3); //black
+
+$game->move_to(5,6,5,4); //white
+$game->move_to(6,6,6,4); //white
+$game->move_to(7,6,7,4); //white
+/*
 $game->move_to(4,4,4,3); //white
 $game->move_to(3,1,3,2); //black
+
 
 $game->move_to(4,3,3,2); //white
 $game->move_to(4,2,4,3); //black
 
 $game->move_to(3,2,3,1); //white
 $game->move_to(4,3,4,4); //black
+
 
 $game->move_to(3,1,2,0); //white
 $game->player_has_chosenpiece(new Queen(1),2,0); //After selection user which piece to replace pawn with
@@ -105,12 +121,9 @@ $game->move_to(4,6,5,7); //black
 $game->player_has_chosenpiece(new Bishop(0),5,7); //After selection user which piece to replace pawn with
 
 $game->move_to(7,6,7,4); //white
-
-/*
-$game->move_to(4,4,4,3); //white
-$game->move_to(4,3,4,2); //white
-$game->move_to(4,2,5,1); //white
-
-$game->move_to(5,1,6,0); //white
-$game->player_has_chosenpiece(new Queen(1),6,0); //After selection user which piece to replace pawn with
+$game->move_to(7,4,7,3); //white
+$game->move_to(7,3,7,2); //white
+$game->move_to(7,2,6,1); //white
+$game->move_to(6,1,7,0); //white
+$game->player_has_chosenpiece(new Knight(1),7,0); //After selection user which piece to replace pawn with
 */

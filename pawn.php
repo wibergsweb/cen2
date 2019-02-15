@@ -5,6 +5,8 @@ class Pawn extends Piece {
     public $move_steps = 2;
     public $wait_user = false;
     public $main_direction = null; //Up or down on board?
+    public $passant_square = null;
+    
     private $other_players_color = null;
     
     public function __construct($color, $main_direction) {
@@ -18,7 +20,7 @@ class Pawn extends Piece {
         $this->main_direction = $main_direction;
     }
     
-    public function not_first_move() {
+    public function not_first_move() {        
         $this->first_move = false;
     }
     
@@ -48,10 +50,7 @@ class Pawn extends Piece {
             }
             
         }
-        
 
-        
-        
         $check_piece_diagonal_left = null;
         $check_piece_diagonal_right = null;
         if ($x<7) {
@@ -81,13 +80,11 @@ class Pawn extends Piece {
     
     public function get_aftermove($gridpositions, $x,$y) {
         $direction = $this->main_direction;
-        if ($y>0) {
-            $check_piece_diagonal_left = null;
-            $check_piece_diagonal_right = null;
-            if ($x>0 && $x<7 && $y>0 && $y<7) {
-                $check_piece_diagonal_left = $gridpositions[$x-1][$y+$direction];
-                $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction];
-            }
+        $check_piece_diagonal_left = null;
+        $check_piece_diagonal_right = null;
+        if ($x>0 && $x<7 && $y>0 && $y<7) {
+            $check_piece_diagonal_left = $gridpositions[$x-1][$y+$direction];
+            $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction];
             
             if ($check_piece_diagonal_left !== null) {
                 $piece_color = $check_piece_diagonal_left->get_color();
@@ -110,9 +107,25 @@ class Pawn extends Piece {
         if ($y===7 && $direction === 1) {
             $this->wait_user = true; //Wait for user to select piece
             return 'Choose your piece';
-        }        
+        }     
+        
+        if ($direction==1) {
+            $other_direction = -1;
+        }
+        else {
+            $other_direction = 1;
+        }
+        
+        if ($this->first_move === true && $this->move_steps==2) {
+            $this->passant_square = array($this->color, $x,$y+($other_direction));
+            return 'First move';
+        }
         
         return 'OK';
+    }
+    
+    public function get_passantsquare() {
+        return $this->passant_square;
     }
     
     public function get_waituser() {
