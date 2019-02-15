@@ -1,12 +1,12 @@
 <?php
 class Pawn extends Piece {    
-    //private bool final_row (true/false)
     //threat() → change move_pattern  (forward=1, backward=0, left=1, right=1)
     
     public $forward_diagonal_left = false;
     public $forward_diagonal_right = false;
     public $forward = true;
     public $move_steps = 2;
+    public $wait_user = false;
     
     public function __construct($color) {
             $this->color = $color;
@@ -72,10 +72,18 @@ class Pawn extends Piece {
                 if ($piece_color===0 && $check_piece_diagonal_right instanceof King) {
                     return 'chess';
                 }
-            }       
+            }                 
+        }
+        if ($y===0) {
+            $this->wait_user = true; //Wait for user to select piece
+            return 'Choose your piece';
         }
         
         return 'OK';
+    }
+    
+    public function get_waituser() {
+        return $this->wait_user;
     }
     
     //Get chess character

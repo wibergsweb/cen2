@@ -12,6 +12,7 @@ class Game {
     private $forward=-1, $backward = 0;
     private $boardobj;
     private $whos_turn;
+    private $gridpos;
        
     /*
      * $forward = -1 means white at bottom of board, 1 means white at top of board
@@ -27,15 +28,15 @@ class Game {
         $make_move = false;
         echo 'x1=' . $x1 . ', y1=' . $y1;
          echo 'TO x2=' . $x2 . ', y2=' . $y2;
-        $gridpos = $this->boardobj->get_gridpositions();
+        $this->gridpos = $this->boardobj->get_gridpositions();
         $active_piece = $this->boardobj->get_piece($x1,$y1);
-        $valid_moves = $active_piece->get_validmoves($gridpos,$x1,$y1);                
+        $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1);                
         echo '<pre>';
         var_dump ($valid_moves);
         echo '</pre>';
 
         
-        //Make sure player only are able to go to 
+        //Make sure player only are able to go to valid locations
         foreach($valid_moves as $vm) {
             $check_movetox = $vm[0];
             $check_movetoy = $vm[1];
@@ -51,18 +52,25 @@ class Game {
             return;
         }        
 
-        
-        $gridpos[$x1][$y1] = null;
+        $this->gridpos[$x1][$y1] = null;
         $active_piece->not_first_move();
-        $gridpos[$x2][$y2] = $active_piece;
+        $this->gridpos[$x2][$y2] = $active_piece;
         
-        $after_move = $active_piece->get_aftermove($gridpos,$x2,$y2);
+        $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
         echo '<b>' .$after_move .'</b>';
         
-        $this->boardobj->renew($gridpos);
+        if ($active_piece->get_waituser() === false) {
+            $this->boardobj->renew($this->gridpos);
+            $this->draw();
+        }        
         
-        $this->draw();
-
+    }
+    
+    public function player_has_chosenpiece($piece,$x,$y) {
+        $this->gridpos[$x][$y] = $piece;
+        $this->boardobj->renew($this->gridpos);
+        $this->draw();    
+        echo 'User has selected piece now.';
     }
     
     public function draw() {
@@ -77,4 +85,6 @@ $game->move_to(4,6,4,4);
 $game->move_to(4,4,4,3);
 $game->move_to(4,3,4,2);
 $game->move_to(4,2,5,1);
+
 $game->move_to(5,1,6,0);
+$game->player_has_chosenpiece(new Queen(1),6,0); //After selection user which piece to replace pawn with
