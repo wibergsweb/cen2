@@ -33,6 +33,7 @@ class Game {
         $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1);                
         echo '<pre>';
         var_dump ($valid_moves);
+        var_dump($active_piece);
         echo '</pre>';
 
         
@@ -81,10 +82,35 @@ class Game {
 }
 $game = new Game();
 
-$game->move_to(4,6,4,4);
-$game->move_to(4,4,4,3);
-$game->move_to(4,3,4,2);
-$game->move_to(4,2,5,1);
+$game->move_to(4,6,4,4); //white
+$game->move_to(4,1,4,2); //black
+$game->move_to(4,4,4,3); //white
+$game->move_to(3,1,3,2); //black
 
-$game->move_to(5,1,6,0);
+$game->move_to(4,3,3,2); //white
+$game->move_to(4,2,4,3); //black
+
+$game->move_to(3,2,3,1); //white
+$game->move_to(4,3,4,4); //black
+
+$game->move_to(3,1,2,0); //white
+$game->player_has_chosenpiece(new Queen(1),2,0); //After selection user which piece to replace pawn with
+$game->move_to(4,4,4,5); //black
+
+$game->move_to(6,6,6,4); //white
+$game->move_to(4,5,4,6); //black
+
+$game->move_to(6,4,6,3); //white
+$game->move_to(4,6,5,7); //black
+$game->player_has_chosenpiece(new Bishop(0),5,7); //After selection user which piece to replace pawn with
+
+$game->move_to(7,6,7,4); //white
+
+/*
+$game->move_to(4,4,4,3); //white
+$game->move_to(4,3,4,2); //white
+$game->move_to(4,2,5,1); //white
+
+$game->move_to(5,1,6,0); //white
 $game->player_has_chosenpiece(new Queen(1),6,0); //After selection user which piece to replace pawn with
+*/
