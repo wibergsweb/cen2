@@ -61,7 +61,6 @@ class Game {
         
         $passant = $active_piece->get_passantsquare();
         if ($passant !== null) {
-            echo 'passsant';
             $passant_color = $passant[0];
             $passant_x = $passant[1];
             $passant_y = $passant[2];
@@ -70,6 +69,7 @@ class Game {
         
         if ($active_piece->get_waituser() === false) {
             $active_piece->not_first_move();
+            $active_piece->last_move($x2,$y2);
             $this->boardobj->renew($this->gridpos);
             $this->draw();
         }        
@@ -77,6 +77,7 @@ class Game {
     }
     
     public function player_has_chosenpiece($piece,$x,$y) {        
+        $piece->last_move($x,$y);
         $this->gridpos[$x][$y] = $piece;
         $this->boardobj->renew($this->gridpos);
         $this->draw();    
@@ -91,12 +92,13 @@ class Game {
 }
 $game = new Game();
 
-$game->move_to(4,6,4,4); //white
+$game->move_to(5,6,5,4); //white
+$game->move_to(6,1,6,3); //black
+
+$game->move_to(5,4,5,3); //white
 $game->move_to(4,1,4,3); //black
 
-$game->move_to(5,6,5,4); //white
-$game->move_to(6,6,6,4); //white
-$game->move_to(7,6,7,4); //white
+$game->move_to(5,3,4,2); //white
 /*
 $game->move_to(4,4,4,3); //white
 $game->move_to(3,1,3,2); //black

@@ -22,7 +22,7 @@ class Board {
                 $this->grid_positions[$x][$y] = null;
             }
         }
-     
+        
         for($x=0;$x<8;$x++) {  
             $this->grid_positions[$x][1] = new Pawn(0,1); 
             $this->grid_positions[$x][6] = new Pawn(1,-1);
