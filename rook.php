@@ -13,79 +13,33 @@ class Rook extends Piece {
         }            
     }
     
-    public function check($gridpositions,$x,$y,$direction_x,$direction_y) {
-        $vm = array();
-        $xd = $x+$direction_x;
-        $yd = $y+$direction_y;
-        echo '<hr>';
-        echo 'xd=' . $xd;
-        echo 'yd='.$yd;
-        echo '<hr>';
-        if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
-            $check_piece = $gridpositions[$xd][$yd];
-            var_dump($check_piece);
-            if ($check_piece === null) {
-                $vm = array($xd,$yd);
-            }   
-            if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color) {
-                $vm = array($xd,$yd);
-            }
-            if ($check_piece !==null && $check_piece->get_color() === $this->get_color() && !$check_piece instanceof Passant) {
-                return null;
-            }            
-            if ($check_piece !==null && $check_piece instanceof Passant) {
-                $vm = array($xd,$yd);
-            }            
-        }
-        else {
-            return null;
-        }
-
-        
-        return $vm;
-    }
-    
     public function get_validmoves($gridpositions, $x,$y) {                
         $valid_moves = array();
-        /*
-         * $i=1;
-        while($i<8) {
-            $valid_moves[] = $this->check($gridpositions,$x,$y,-1*$i,0);       //left
-            $i++;
-        }
-        $i=1;
-        while($i<8) {        
-            $valid_moves[] = $this->check($gridpositions,$x,$y,1*$i,0);        //right
-            $i++;
-        }
-        */
-        $i=1;
-        $do_check = true;
-        while($do_check === true) {
-            $vm = $this->check($gridpositions,$x,$y,0,-1*$i);        //check up
-            if ($vm === null ) {
-                $do_check = false;
-                break;
-            }
-            $valid_moves[] = $vm;
-            $i++;
-        }
-        /*
-        $i=1;
-        while($i<8) {
-            $valid_moves[] = $this->check($gridpositions,$x,$y,0,-1*$i);       //check down            
-            $i++;
-        }        
-           */
         
-        $temp = array();
-        foreach($valid_moves as $vm) {
-            if (!empty($vm)) {
-                $temp[] = $vm;
-            }
-        }
+        //check left
+        $this->multi_x  = -1;
+        $this->multi_y  = 0;        
+        $valid_moves1 = $this->check_available_squares($gridpositions,$x,$y);           
+
+        //check right
+        $this->multi_x  = 1;
+        $this->multi_y  = 0;        
+        $valid_moves2 = $this->check_available_squares($gridpositions,$x,$y);           
+
+        //check up
+        $this->multi_x  = 0;
+        $this->multi_y  = -1;        
+        $valid_moves3 = $this->check_available_squares($gridpositions,$x,$y);     
         
-        return $temp;
+        //check down
+        $this->multi_x  = 0;
+        $this->multi_y  = 1;        
+        $valid_moves4 = $this->check_available_squares($gridpositions,$x,$y);   
+        
+        
+        $valid_moves = array_merge($valid_moves1,$valid_moves2,$valid_moves3,$valid_moves4);
+        
+        return $valid_moves;
     }
     
     public function get_aftermove($gridpositions, $x,$y) {
