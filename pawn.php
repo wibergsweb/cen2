@@ -24,6 +24,10 @@ class Pawn extends Piece {
         $this->first_move = false;
     }
     
+    public function get_firstmove() {
+        return $this->first_move;
+    }
+    
     public function last_move($x,$y) {
         $this->last_move = array($x,$y);
     }
@@ -76,14 +80,12 @@ class Pawn extends Piece {
                     
                     //Check left piece (is it other players pawn?)
                     if ($piece_color===$this->other_players_color && $gridpositions[$x-1][$y] instanceof Pawn) {
-                        if ($gridpositions[$x-1][$y]->move_steps === 2) {
-                            //Previous move in game (other players pawn)
-                            $last = $gridpositions[$x-1][$y]->get_last_move();
-                            $last_x = $last[0];
-                            $last_y = $last[1];
-                            if ($x-1 === $last_x && $y == $last_y) {
-                                $is_valid = true;
-                            }
+                        //Previous move in game (other players pawn)
+                        $last = $gridpositions[$x-1][$y]->get_last_move();
+                        $last_x = $last[0];
+                        $last_y = $last[1];
+                        if ($x-1 === $last_x && $y == $last_y) {
+                            $is_valid = true;
                         }
                     }
                 }
@@ -105,7 +107,6 @@ class Pawn extends Piece {
                     
                     //Check left piece (is it other players pawn?)
                     if ($piece_color===$this->other_players_color && $gridpositions[$x+1][$y] instanceof Pawn) {
-                        if ($gridpositions[$x+1][$y]->move_steps === 2) {
                             //Previous move in game (other players pawn)
                             $last = $gridpositions[$x+1][$y]->get_last_move();
                             $last_x = $last[0];
@@ -113,7 +114,6 @@ class Pawn extends Piece {
                             if ($x+1 === $last_x && $y == $last_y) {
                                 $is_valid = true;
                             }
-                        }
                     }
                 }
                 
