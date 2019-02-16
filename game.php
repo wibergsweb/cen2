@@ -104,6 +104,11 @@ $game->move_to(5,5,4,4); //white
 $game->move_to(4,4,5,4); //white
 
 $game->move_to(5,4,6,3); //white
+
+$game->move_to(7,6,7,4); //white
+
+$game->move_to(7,7,7,7); //white
+
 /*
 $game->move_to(4,4,4,3); //white
 $game->move_to(3,1,3,2); //black

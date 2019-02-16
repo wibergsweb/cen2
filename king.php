@@ -22,7 +22,7 @@ class King extends Piece {
         $vm = array();
         $xd = $x+$direction_x;
         $yd = $y+$direction_y;
-        if ($xd>0 && $xd<7 && $yd>0 && $yd<7) {
+        if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
             $check_piece = $gridpositions[$xd][$yd];
             if ($check_piece == null) {
                 $vm = array($xd,$yd);
@@ -32,8 +32,12 @@ class King extends Piece {
                 //TODO check
                 
                 //If NOT threatened, it's valid:
-                $vm = arraY($xd,$yd);
+                $vm = array($xd,$yd);
             }
+            if ($check_piece !==null && $check_piece instanceof Passant) {
+                $vm = array($xd,$yd);
+            }
+            
         }
         
         return $vm;
