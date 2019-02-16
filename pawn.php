@@ -5,7 +5,7 @@ class Pawn extends Piece {
     public $wait_user = false;
     public $main_direction = null;  //Up (-1) or down (1) on board?
     public $passant_square = null;
-    private $last_move = array();     //array of x,y
+    public $last_move = array();     //array of x,y
     private $other_players_color = null;
     
     public function __construct($color, $main_direction) {
@@ -19,17 +19,11 @@ class Pawn extends Piece {
         $this->main_direction = $main_direction;
     }
     
-    public function not_first_move() {        
-        $this->first_move = false;
-    }
     
     public function get_firstmove() {
         return $this->first_move;
     }
-    
-    public function last_move($x,$y) {
-        $this->last_move = array($x,$y);
-    }
+
     
     public function get_last_move() {
         return $this->last_move;
@@ -144,6 +138,7 @@ class Pawn extends Piece {
             if ($check_piece_diagonal_left !== null) {
                 $piece_color = $check_piece_diagonal_left->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_left instanceof King) {
+                    $gridpositions[$x-1][$y+$direction]->is_chess();
                     return array($gridpositions,'chess');
                 }
             }                
@@ -151,6 +146,7 @@ class Pawn extends Piece {
             if ($check_piece_diagonal_right !== null) {
                 $piece_color = $check_piece_diagonal_right->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_right instanceof King) {
+                    $gridpositions[$x+1][$y+$direction]->is_chess();
                     return array($gridpositions,'chess');
                 }               
             }                 
@@ -192,7 +188,7 @@ class Pawn extends Piece {
             $gridpositions[$x][$movepos_y] = null;
         }
         
-        return array($gridpositions,'OK');
+        return array($gridpositions,'Pawn moved');
     }
     
     public function get_passantsquare() {
