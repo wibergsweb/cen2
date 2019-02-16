@@ -2,9 +2,16 @@
 class King extends Piece {
     public $is_chess = false;
     public $move_steps=1;
+    public $other_players_color;
     
     public function __construct($color) {
-            $this->color = $color;
+        $this->color = $color;
+        if ($this->color === 0) {
+            $this->other_players_color = 1;
+        }
+        else {
+            $this->other_players_color = 0;
+        }            
     }
     
     public function is_chess() {
@@ -20,6 +27,13 @@ class King extends Piece {
             if ($check_piece == null) {
                 $vm = array($xd,$yd);
             }   
+            if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color) {
+                //Is threatened by any other piece (other color) now? 
+                //TODO check
+                
+                //If NOT threatened, it's valid:
+                $vm = arraY($xd,$yd);
+            }
         }
         
         return $vm;
