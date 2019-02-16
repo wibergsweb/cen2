@@ -28,7 +28,7 @@ class King extends Piece {
                 $vm = array($xd,$yd);
             }   
             if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color) {
-                //Is threatened by any other piece (other color) now? 
+                //Is threatened by any other piece (other color) at this square in grid/in board? 
                 //TODO check
                 
                 //If NOT threatened, it's valid:
