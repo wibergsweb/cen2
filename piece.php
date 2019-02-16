@@ -12,10 +12,10 @@ abstract class Piece {
     }
     
     
-    public function check_available_squares($gridpositions,$x,$y) {
+    public function check_available_squares($gridpositions,$x,$y,$multi_x,$multi_y) {
         $vm = array();
-        $xd = $x + $this->multi_x;
-        $yd = $y + $this->multi_y;
+        $xd = $x + $multi_x;
+        $yd = $y + $multi_y;
         
         $do_check = true;
         while($do_check === true) {   
@@ -45,8 +45,8 @@ abstract class Piece {
                 break;
             }
         
-            $xd+=$this->multi_x;
-            $yd+=$this->multi_y;
+            $xd+=$multi_x;
+            $yd+=$multi_y;
         }
 
         
