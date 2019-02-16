@@ -57,25 +57,10 @@ class Game {
         $this->gridpos[$x2][$y2] = $active_piece;
         
         $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
-        echo '<b>' .$after_move .'</b>';
+        echo '<b>' .$after_move[1] .'</b>';    
         
-        $passant = $active_piece->get_passantsquare();
-        if ($passant !== null) {
-            $passant_color = $passant[0];
-            $passant_x = $passant[1];
-            $passant_y = $passant[2];
-            $this->gridpos[$passant_x][$passant_y] = new Passant($passant_color);            
-        }
-        else {
-            for($y=0;$y<8;$y++) {
-                for($x=0;$x<8;$x++) {
-                    $gp = $this->gridpos[$x][$y];
-                    if ($gp instanceof Passant) {
-                        $this->gridpos[$x][$y] = null;
-                    }
-                }
-            }
-        }
+        //Regenerate gridpos (after move)
+        $this->gridpos = array_slice($after_move[0],0,count($after_move[0]));
         
         if ($active_piece->get_waituser() === false) {
             $active_piece->last_move($x2,$y2);
@@ -108,7 +93,7 @@ $game->move_to(6,1,6,3); //black
 $game->move_to(5,4,5,3); //white
 $game->move_to(4,1,4,3); //black
 
-$game->move_to(6,3,6,4); //black
+
 
 $game->move_to(5,3,4,2); //white
 /*

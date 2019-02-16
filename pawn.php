@@ -6,7 +6,6 @@ class Pawn extends Piece {
     public $main_direction = null;  //Up (-1) or down (1) on board?
     public $passant_square = null;
     private $last_move = array();     //array of x,y
-    
     private $other_players_color = null;
     
     public function __construct($color, $main_direction) {
@@ -128,6 +127,7 @@ class Pawn extends Piece {
     
     
     public function get_aftermove($gridpositions, $x,$y) {
+        
         $direction = $this->main_direction;
         if ($direction==1) {
             $other_direction = -1;
@@ -144,14 +144,14 @@ class Pawn extends Piece {
             if ($check_piece_diagonal_left !== null) {
                 $piece_color = $check_piece_diagonal_left->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_left instanceof King) {
-                    return 'chess';
+                    return array($gridpositions,'chess');
                 }
             }                
 
             if ($check_piece_diagonal_right !== null) {
                 $piece_color = $check_piece_diagonal_right->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_right instanceof King) {
-                    return 'chess';
+                    return array($gridpositions,'chess');
                 }               
             }                 
         }
@@ -161,7 +161,7 @@ class Pawn extends Piece {
         }
         if ($y===7 && $direction === 1) {
             $this->wait_user = true; //Wait for user to select piece
-            return 'Choose your piece';
+            return array($gridpositions,'Choose your piece');
         }     
         
         if ($this->move_steps==2) {
@@ -170,9 +170,29 @@ class Pawn extends Piece {
         else {
             $this->passant_square = null;
         }
-
+            
+        $passant = $gridpositions[$x][$y]->get_passantsquare();
+        if ($passant !== null) {
+            $passant_color = $passant[0];
+            $passant_x = $passant[1];
+            $passant_y = $passant[2];
+            $gridpositions[$passant_x][$passant_y] = new Passant($passant_color);            
+        }
+        else {            
+            for($yc=0;$yc<8;$yc++) {
+                for($xc=0;$xc<8;$xc++) {
+                    $gp = $gridpositions[$xc][$yc];
+                    if ($gp instanceof Passant) {
+                        $gridpositions[$xc][$yc] = null;
+                    }                     
+                }
+            }
+            //Remove pawn
+            $movepos_y = $y+$other_direction;
+            $gridpositions[$x][$movepos_y] = null;
+        }
         
-        return 'OK';
+        return array($gridpositions,'OK');
     }
     
     public function get_passantsquare() {
