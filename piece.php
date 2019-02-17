@@ -3,8 +3,6 @@ abstract class Piece {
     public $first_move = true;
     public $color; //0 = black, 1 = white
     public $last_move;
-    public $multi_x;
-    public $multi_y;
     
 
     public function get_color() {

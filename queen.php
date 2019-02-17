@@ -14,8 +14,6 @@ class Queen extends Piece {
     }
     
     public function get_validmoves($gridpositions, $x,$y) {                
-        $valid_moves = array();
-        
         $valid_moves1 = $this->check_available_squares($gridpositions,$x,$y,-1,0);  //left
         $valid_moves2 = $this->check_available_squares($gridpositions,$x,$y,1,0);   //right        
         $valid_moves3 = $this->check_available_squares($gridpositions,$x,$y,0,-1);  //up     
