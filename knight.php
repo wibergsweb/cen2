@@ -13,7 +13,7 @@ class Knight extends Piece {
         }            
     }
     
-    public function check($gridpositions,$x,$y,$direction_x,$direction_y) {
+    public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false) {
         $vm = array();
         $xd = $x+$direction_x;
         $yd = $y+$direction_y;
@@ -22,6 +22,20 @@ class Knight extends Piece {
             if ($check_piece == null) {
                 $vm = array($xd,$yd);
             }   
+                if ($king_check === false) {
+                    if ($check_piece !==null && $check_piece instanceof King) {
+                        //King's square is not included. Cannot go further                       
+                        return $vm;
+                    }
+                }
+                else {
+                    //Other players king is included, but no more valid moves in this direction
+                    if ($check_piece !== null && $check_piece->get_color() === $this->other_players_color) {
+                        $vm = array($xd,$yd); 
+                        return $vm;          
+                    }
+                }
+                
             if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color && !$check_piece instanceof King) {
                 $vm = array($xd,$yd);
             }

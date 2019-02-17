@@ -17,11 +17,13 @@ abstract class Piece {
     
     public function check_chess($gridpositions, $valid_moves) {
         foreach($valid_moves as $vm) {
-            $x = $vm[0];
-            $y = $vm[1];
-            $grid = $gridpositions[$x][$y];
-            if ($grid !== null && $grid instanceof King) {
-                return array($x,$y);
+            if (isset($vm[0]) && isset($vm[1])) {
+                $x = $vm[0];
+                $y = $vm[1];
+                $grid = $gridpositions[$x][$y];
+                if ($grid !== null && $grid instanceof King) {
+                    return array($x,$y);
+                }
             }
         }   
         return false;
