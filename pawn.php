@@ -125,6 +125,7 @@ class Pawn extends Piece {
     
     public function get_aftermove($gridpositions, $x,$y) {
         
+        $return_str = 'Pawn moved ';
         $direction = $this->main_direction;
         if ($direction==1) {
             $other_direction = -1;
@@ -142,7 +143,7 @@ class Pawn extends Piece {
                 $piece_color = $check_piece_diagonal_left->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_left instanceof King) {
                     $gridpositions[$x-1][$y+$direction]->is_chess();
-                    return array($gridpositions,'chess',array());
+                    return array($gridpositions,'chess by pawn',array($x-1,$y+$direction));
                 }
             }                
 
@@ -150,7 +151,7 @@ class Pawn extends Piece {
                 $piece_color = $check_piece_diagonal_right->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_right instanceof King) {
                     $gridpositions[$x+1][$y+$direction]->is_chess();
-                    return array($gridpositions,'chess',array());
+                    return array($gridpositions,'chess by pawn',array($x-1,$y+$direction));
                 }               
             }                 
         }
