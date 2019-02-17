@@ -2,17 +2,6 @@
 class King extends Piece {
     public $is_chess = false;
     public $move_steps=1;
-    public $other_players_color;
-    
-    public function __construct($color) {
-        $this->color = $color;
-        if ($this->color === 0) {
-            $this->other_players_color = 1;
-        }
-        else {
-            $this->other_players_color = 0;
-        }            
-    }
     
     public function is_chess() {
         $this->is_chess = true;

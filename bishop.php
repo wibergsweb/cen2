@@ -1,17 +1,6 @@
 <?php
 class Bishop extends Piece {        
     public $move_steps=1;
-    public $other_players_color;
-    
-    public function __construct($color) {
-        $this->color = $color;
-        if ($this->color === 0) {
-            $this->other_players_color = 1;
-        }
-        else {
-            $this->other_players_color = 0;
-        }            
-    }
     
     public function get_validmoves($gridpositions, $x,$y) {                  
         $valid_moves1 = $this->check_available_squares($gridpositions,$x,$y,-1,-1);  //left up
@@ -34,7 +23,6 @@ class Bishop extends Piece {
         if ($chess !== false) {
             $return_str .= ':chess (' . $chess[0] . '-' . $chess[1] .')';
         }
-
         return array($gridpositions,$return_str);
     }    
     

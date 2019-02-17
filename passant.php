@@ -1,11 +1,6 @@
 <?php
 class Passant extends Piece {    
-    
-    public function __construct($color) {
-            $this->color = $color;          
-    }
-    
-    
+
     public function get_validmoves($gridpositions, $x,$y) {   
         return array();
     }

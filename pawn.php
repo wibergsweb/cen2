@@ -1,59 +1,62 @@
 <?php
 class Pawn extends Piece {    
-    public $forward = true;
     public $move_steps = 2;
     public $wait_user = false;
-    public $main_direction = null;  //Up (-1) or down (1) on board?
     public $passant_square = null;
     public $last_move = array();     //array of x,y
 
-    
-    public function __construct($color, $main_direction) {
-        $this->color = $color;
-        if ($this->color === 0) {
-            $this->other_players_color = 1;
-        }
-        else {
-            $this->other_players_color = 0;
-        }
-        $this->main_direction = $main_direction;
-    }
-    
-    
     public function get_firstmove() {
         return $this->first_move;
     }
-
     
     public function get_last_move() {
         return $this->last_move;
     }
     
+    public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false) {
+        $vm = array();
+        $xd = $x+$direction_x;
+        $yd = $y+$direction_y;
+        if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
+            $check_piece = $gridpositions[$xd][$yd];
+            if ($check_piece == null) {
+                $vm = array($xd,$yd);
+            }   
+                if ($king_check === false) {
+                    if ($check_piece !==null && $check_piece instanceof King) {
+                        //King's square is not included. Cannot go further                       
+                        return $vm;
+                    }
+                }
+                else {
+                    //Other players king is included, but no more valid moves in this direction
+                    if ($check_piece !== null && $check_piece->get_color() === $this->other_players_color) {
+                        $vm = array($xd,$yd); 
+                        return $vm;          
+                    }
+                }
+                
+            if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color && !$check_piece instanceof King) {
+                $vm = array($xd,$yd);
+            }
+            if ($check_piece !==null && $check_piece instanceof Passant && !$check_piece instanceof King) {
+                $vm = array($xd,$yd);
+            }            
+        }
+        
+        return $vm;
+    }       
+    
     public function get_validmoves($gridpositions, $x,$y) {
-        $this->forward = true;
         $direction = $this->main_direction;
         
         if ($this->first_move===false) {
             $this->move_steps = 1;
         }
-        $valid_moves = array();
-        //Check normal movepattern
+        $valid_moves = array();        
         for($i=1;$i<$this->move_steps+1;$i++) {
-            
-            if ($direction == -1) {
-                $check_piece = $gridpositions[$x][$y-$i];
-                if ($check_piece == null) {
-                    $valid_moves[] = array($x,$y-$i);
-                }
-            }
-            else {
-                $check_piece = $gridpositions[$x][$y+$i];            
-                if ($check_piece == null) {
-                    $valid_moves[] = array($x,$y+$i);
-                }                
-            }         
-            
-        }
+            $valid_moves[] = $this->check($gridpositions,$x,$y,0,$i*$direction);  //up or down depending on direction set
+        }        
 
         $check_piece_diagonal_left = null;
         $check_piece_diagonal_right = null;

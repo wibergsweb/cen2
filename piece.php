@@ -4,11 +4,22 @@ abstract class Piece {
     public $color; //0 = black, 1 = white
     public $last_move;
     public $other_players_color = null;    
-
+    public $main_direction = null;  //Up (-1) or down (1) on board?
+    
+    public function __construct($color, $main_direction=null) {
+        $this->color = $color;
+        if ($this->color === 0) {
+            $this->other_players_color = 1;
+        }
+        else {
+            $this->other_players_color = 0;
+        }
+        $this->main_direction = $main_direction;
+    }
+    
     public function get_color() {
         return $this->color;
     }
-    
     
     public function get_other_players_color() {
         return $this->other_players_color;

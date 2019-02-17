@@ -1,17 +1,17 @@
 <?php
 class Knight extends Piece {    
     public $move_steps=1;
-    public $other_players_color;
-    
-    public function __construct($color) {
+
+    public function __construct($color, $main_direction=null) {
         $this->color = $color;
         if ($this->color === 0) {
             $this->other_players_color = 1;
         }
         else {
             $this->other_players_color = 0;
-        }            
-    }
+        }
+        $this->main_direction = $main_direction;
+    }    
     
     public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false) {
         $vm = array();
@@ -42,8 +42,7 @@ class Knight extends Piece {
             if ($check_piece !==null && $check_piece instanceof Passant && !$check_piece instanceof King) {
                 $vm = array($xd,$yd);
             }            
-        }
-        
+        }        
         return $vm;
     }    
     
