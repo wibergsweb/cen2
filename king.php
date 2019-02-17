@@ -1,7 +1,7 @@
 <?php
 class King extends Piece {
     public $is_chess = false;
-    public $move_steps=1;
+    public $temp_valid_moves = array();
     
     public function is_chess() {
         $this->is_chess = true;
@@ -32,7 +32,7 @@ class King extends Piece {
         return $vm;
     }
     
-    public function get_validmoves($gridpositions, $x,$y) {                
+    public function get_validmoves($gridpositions, $x,$y,$x2,$y2) {    
         $valid_moves = array();
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,0);       //left
         $valid_moves[] = $this->check($gridpositions,$x,$y,1,0);        //right
@@ -49,11 +49,52 @@ class King extends Piece {
                 $temp[] = $vm;
             }
         }
+          
+        //TODO: Is king chess after move from any piece of other colors player on board? If it is then it's an invalid move
+        //Find a queen that threatens king        
+        for($yp=0;$yp<8;$yp++) {
+            for($xp=0;$xp<8;$xp++) {
+                $gp = $gridpositions[$xp][$yp];
+                 if ($gp !== null && $this->get_color() === $gp->get_other_players_color()) {
+                    
+ 
+                        $piece = $gp->get_aftermove($gridpositions,$xp,$yp);
+                        
+                        if (isset($piece[2])) {
+                        if ($piece[2] !== null) {
+                            foreach($piece[2] as $p) {
+                                $xc = $p[0];
+                                $yc = $p[1];
+
+                                if ($x2==$xc && $y2==$yc) {
+                                    foreach($temp as $tempkey=>$t) {
+                                        if ($t[0] == $x2 && $t[1] == $y2) {
+                                            unset($temp[$tempkey]);
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                        }
+                        
+                        //Just for testing against Queen
+
+
+                }   
+            }
+        }
+
         
         return $temp;
     }
     
     public function get_aftermove($gridpositions, $x,$y) {
+
+
+
+
+        
          return array($gridpositions,'King moved');
     }    
     

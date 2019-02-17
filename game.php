@@ -30,7 +30,7 @@ class Game {
          echo 'TO x2=' . $x2 . ', y2=' . $y2;
         $this->gridpos = $this->boardobj->get_gridpositions();
         $active_piece = $this->boardobj->get_piece($x1,$y1);
-        $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1);                
+        $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1,$x2,$y2);                
         echo '<pre>';
         var_dump ($valid_moves);
         var_dump($active_piece);
@@ -129,33 +129,6 @@ $game->move_to(6,3,6,2); //white
 $game->move_to(3,3,5,4); //black
 $game->move_to(3,0,6,3); //black
 $game->move_to(7,0,6,0); //black
-/*
-$game->move_to(4,4,4,3); //white
-$game->move_to(3,1,3,2); //black
+$game->move_to(6,2,5,2); //white
 
-
-$game->move_to(4,3,3,2); //white
-$game->move_to(4,2,4,3); //black
-
-$game->move_to(3,2,3,1); //white
-$game->move_to(4,3,4,4); //black
-
-
-$game->move_to(3,1,2,0); //white
-$game->player_has_chosenpiece(new Queen(1),2,0); //After selection user which piece to replace pawn with
-$game->move_to(4,4,4,5); //black
-
-$game->move_to(6,6,6,4); //white
-$game->move_to(4,5,4,6); //black
-
-$game->move_to(6,4,6,3); //white
-$game->move_to(4,6,5,7); //black
-$game->player_has_chosenpiece(new Bishop(0),5,7); //After selection user which piece to replace pawn with
-
-$game->move_to(7,6,7,4); //white
-$game->move_to(7,4,7,3); //white
-$game->move_to(7,3,7,2); //white
-$game->move_to(7,2,6,1); //white
-$game->move_to(6,1,7,0); //white
-$game->player_has_chosenpiece(new Knight(1),7,0); //After selection user which piece to replace pawn with
-*/
+$game->move_to(4,0,4,1); //black

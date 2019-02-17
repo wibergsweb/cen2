@@ -1,7 +1,7 @@
 <?php
 class Passant extends Piece {    
 
-    public function get_validmoves($gridpositions, $x,$y) {   
+    public function get_validmoves($gridpositions, $x,$y,$x2,$y2) { 
         return array();
     }
     

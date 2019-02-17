@@ -112,7 +112,7 @@ abstract class Piece {
     }
     
     //This validation is done in each piece-class (pawn, knight, bishop etc)
-    abstract public function get_validmoves($gridpositions, $x,$y);
+    abstract public function get_validmoves($gridpositions, $x,$y,$x2,$y2);
     
     //Get chess character
     abstract protected function get_char();

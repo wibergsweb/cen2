@@ -2,7 +2,7 @@
 class Rook extends Piece {
     public $move_steps=1;
 
-    public function get_validmoves($gridpositions, $x,$y) {                
+    public function get_validmoves($gridpositions, $x,$y,$x2,$y2) {           
         $valid_moves1 = $this->check_available_squares($gridpositions,$x,$y,-1,0);  //left
         $valid_moves2 = $this->check_available_squares($gridpositions,$x,$y,1,0);   //right        
         $valid_moves3 = $this->check_available_squares($gridpositions,$x,$y,0,-1);  //up     
@@ -20,10 +20,14 @@ class Rook extends Piece {
 
         $return_str = 'Rook moved ';
         $chess = $this->check_chess($gridpositions,$valid_moves);
+        
+        $chess_arr = null;
         if ($chess !== false) {
             $return_str .= ':chess (' . $chess[0] . '-' . $chess[1] .')';
-        }       
-        return array($gridpositions,$return_str);
+            $chess_arr = array_slice($valid_moves,0,count($valid_moves));
+        }
+        
+         return array($gridpositions,$return_str,$chess_arr);
     }    
     
     //Get chess character

@@ -47,7 +47,7 @@ class Pawn extends Piece {
         return $vm;
     }       
     
-    public function get_validmoves($gridpositions, $x,$y) {
+    public function get_validmoves($gridpositions, $x,$y,$x2,$y2) {
         $direction = $this->main_direction;
         
         if ($this->first_move===false) {
@@ -142,7 +142,7 @@ class Pawn extends Piece {
                 $piece_color = $check_piece_diagonal_left->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_left instanceof King) {
                     $gridpositions[$x-1][$y+$direction]->is_chess();
-                    return array($gridpositions,'chess');
+                    return array($gridpositions,'chess',array());
                 }
             }                
 
@@ -150,7 +150,7 @@ class Pawn extends Piece {
                 $piece_color = $check_piece_diagonal_right->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_right instanceof King) {
                     $gridpositions[$x+1][$y+$direction]->is_chess();
-                    return array($gridpositions,'chess');
+                    return array($gridpositions,'chess',array());
                 }               
             }                 
         }
@@ -191,7 +191,7 @@ class Pawn extends Piece {
             $gridpositions[$x][$movepos_y] = null;
         }
         
-        return array($gridpositions,'Pawn moved');
+        return array($gridpositions,'Pawn moved',array());
     }
     
     public function get_passantsquare() {
