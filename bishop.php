@@ -23,7 +23,19 @@ class Bishop extends Piece {
     }
     
     public function get_aftermove($gridpositions, $x,$y) {
-         return array($gridpositions,'Bishop moved');
+        $valid_moves1 = $this->check_available_squares($gridpositions,$x,$y,-1,-1,true);  //left up
+        $valid_moves2 = $this->check_available_squares($gridpositions,$x,$y,1,-1,true);   //right up      
+        $valid_moves3 = $this->check_available_squares($gridpositions,$x,$y,-1,1,true);  //left down
+        $valid_moves4 = $this->check_available_squares($gridpositions,$x,$y,1,1,true);   //right down             
+        $valid_moves = array_merge($valid_moves1,$valid_moves2,$valid_moves3,$valid_moves4);   
+
+        $return_str = 'Bishop moved ';
+        $chess = $this->check_chess($gridpositions,$valid_moves);
+        if ($chess !== false) {
+            $return_str .= ':chess (' . $chess[0] . '-' . $chess[1] .')';
+        }
+
+        return array($gridpositions,$return_str);
     }    
     
     //Get chess character

@@ -6,7 +6,7 @@ class Pawn extends Piece {
     public $main_direction = null;  //Up (-1) or down (1) on board?
     public $passant_square = null;
     public $last_move = array();     //array of x,y
-    private $other_players_color = null;
+
     
     public function __construct($color, $main_direction) {
         $this->color = $color;

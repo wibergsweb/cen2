@@ -3,14 +3,32 @@ abstract class Piece {
     public $first_move = true;
     public $color; //0 = black, 1 = white
     public $last_move;
-    
+    public $other_players_color = null;    
 
     public function get_color() {
         return $this->color;
     }
     
     
-    public function check_available_squares($gridpositions,$x,$y,$multi_x,$multi_y) {
+    public function get_other_players_color() {
+        return $this->other_players_color;
+    }
+    
+    
+    public function check_chess($gridpositions, $valid_moves) {
+        foreach($valid_moves as $vm) {
+            $x = $vm[0];
+            $y = $vm[1];
+            $grid = $gridpositions[$x][$y];
+            if ($grid !== null && $grid instanceof King) {
+                return array($x,$y);
+            }
+        }   
+        return false;
+    }
+    
+    
+    public function check_available_squares($gridpositions,$x,$y,$multi_x,$multi_y,$king_check = false) {
         $vm = array();
         $xd = $x + $multi_x;
         $yd = $y + $multi_y;
@@ -23,13 +41,30 @@ abstract class Piece {
                 if ($check_piece === null) {
                     $vm[] = array($xd,$yd);
                 }   
-                if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color) {
+                
+                if ($king_check === false) {
+                    if ($check_piece !==null && $check_piece instanceof King) {
+                        //King's square is not included. Cannot go further
+                        $do_check = false;
+                        break;
+                    }
+                }
+                else {
+                    //Other players king is included, but no more valid moves in this direction
+                    if ($check_piece !== null && $check_piece->get_color() === $this->other_players_color) {
+                        $vm[] = array($xd,$yd); 
+                        $do_check = false;
+                        break;                    
+                    }
+                }
+                
+                if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color && !$check_piece instanceof King) {
                     $vm[] = array($xd,$yd);
                     //Other player is included, but cannot go further
                     $do_check = false;
                     break;
                 }
-                if ($check_piece !==null && $check_piece->get_color() === $this->get_color() && !$check_piece instanceof Passant) {
+                if ($check_piece !==null && $check_piece->get_color() === $this->get_color() && !$check_piece instanceof Passant && !$check_piece instanceof King) {
                     $do_check = false;
                     break;
                 }            
@@ -46,7 +81,6 @@ abstract class Piece {
             $xd+=$multi_x;
             $yd+=$multi_y;
         }
-
         
         return $vm;
     }

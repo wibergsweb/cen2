@@ -22,13 +22,12 @@ class Knight extends Piece {
             if ($check_piece == null) {
                 $vm = array($xd,$yd);
             }   
-            if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color) {
+            if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color && !$check_piece instanceof King) {
                 $vm = array($xd,$yd);
             }
-            if ($check_piece !==null && $check_piece instanceof Passant) {
+            if ($check_piece !==null && $check_piece instanceof Passant && !$check_piece instanceof King) {
                 $vm = array($xd,$yd);
-            }
-            
+            }            
         }
         
         return $vm;
@@ -56,7 +55,23 @@ class Knight extends Piece {
     }
     
     public function get_aftermove($gridpositions, $x,$y) {
-         return array($gridpositions,'Knight moved');
+        $valid_moves = array();
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-1,-2,true);    
+        $valid_moves[] = $this->check($gridpositions,$x,$y,1,-2,true);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-2,-1,true);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,2,-1,true);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-1,2,true);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,1,2,true);  
+        $valid_moves[] = $this->check($gridpositions,$x,$y,2,1,true);  
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-2,1,true);    
+
+        $return_str = 'Knight moved ';
+        $chess = $this->check_chess($gridpositions,$valid_moves);
+        if ($chess !== false) {
+            $return_str .= ':chess (' . $chess[0] . '-' . $chess[1] .')';
+        }
+        
+         return array($gridpositions,$return_str);
     }    
     
     //Get chess character
