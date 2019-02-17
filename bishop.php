@@ -23,7 +23,7 @@ class Bishop extends Piece {
     }
     
     public function get_aftermove($gridpositions, $x,$y) {
-         return array($gridpositions,'Rook moved');
+         return array($gridpositions,'Bishop moved');
     }    
     
     //Get chess character

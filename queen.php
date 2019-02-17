@@ -29,7 +29,7 @@ class Queen extends Piece {
     }
     
     public function get_aftermove($gridpositions, $x,$y) {
-         return array($gridpositions,'Rook moved');
+         return array($gridpositions,'Queen moved');
     }    
     
     //Get chess character
