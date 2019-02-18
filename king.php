@@ -62,23 +62,21 @@ class King extends Piece {
                                 foreach($piece[2] as $p) {
                                     $xc = $p[0];
                                     $yc = $p[1];
-                                    if ($x2==$xc && $y2==$yc) {
                                         //Go through current valid moves and compare x,y in grid with 
                                         //x2,y2 (position in grid where king has moved to
                                         foreach($temp as $tempkey=>$t) {
                                             if ($t[0] == $x2 && $t[1] == $y2) {
+                                                echo '<b>ERROR</b>';
                                                 unset($temp[$tempkey]);
-                                            }
-                                        }
                                     }
-
-                                }
                             }
                         }
                 }   
             }
         }
-
+            }
+        }
+            
         
         return $temp;
     }

@@ -29,7 +29,7 @@ class Game {
         echo 'x1=' . $x1 . ', y1=' . $y1;
          echo 'TO x2=' . $x2 . ', y2=' . $y2;
         $this->gridpos = $this->boardobj->get_gridpositions();
-        $active_piece = $this->boardobj->get_piece($x1,$y1);
+        $active_piece = $this->boardobj->get_piece($x1,$y1);   
         $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1,$x2,$y2);                
         echo '<pre>';
         var_dump ($valid_moves);
@@ -90,13 +90,31 @@ $game = new Game();
 $game->move_to(5,6,5,4); //white
 $game->move_to(6,1,6,3); //black
 
+
 $game->move_to(5,4,5,3); //white
 $game->move_to(4,1,4,3); //black
 
 
 
 $game->move_to(5,3,4,2); //white
+$game->move_to(5,1,4,2); //black
 
+$game->move_to(4,6,4,5); //white
+$game->move_to(4,2,4,3); //black
+
+$game->move_to(3,7,7,3); //white
+$game->move_to(4,0,4,1); //black
+
+$game->move_to(5,7,2,4); //white
+$game->move_to(0,1,0,2); //black
+
+$game->move_to(7,3,5,1); //white
+$game->move_to(4,0,5,1); //black
+
+/*
+*/
+
+/*
 $game->move_to(4,7,5,6); //white
 $game->move_to(5,6,5,5); //white
 $game->move_to(5,5,4,4); //white
@@ -132,3 +150,4 @@ $game->move_to(7,0,6,0); //black
 $game->move_to(6,2,5,2); //white
 
 $game->move_to(4,0,4,1); //black
+*/

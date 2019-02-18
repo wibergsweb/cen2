@@ -164,7 +164,7 @@ class Pawn extends Piece {
             return array($gridpositions,'Choose your piece');
         }     
         
-        if ($this->move_steps==2) {
+        if ($this->move_steps==2 && ($y == 3 || $y == 4) ) {
             $this->passant_square = array($this->color, $x,$y+($other_direction));
         }
         else {
