@@ -49,44 +49,47 @@ class King extends Piece {
                 $temp[] = $vm;
             }
         }
-          
+
         //Is king chess when king has moved?
+        $fake_gridpositions = array_slice($gridpositions,0,count($gridpositions));
+        $king = $gridpositions[$x][$y];
+        $fake_gridpositions[$x][$y] = null;
+        $fake_gridpositions[$x2][$y2] = $king;
+        
         for($yp=0;$yp<8;$yp++) {
             for($xp=0;$xp<8;$xp++) {
-                $gp = $gridpositions[$xp][$yp];
-                 if ($gp !== null && $this->get_color() === $gp->get_other_players_color()) {
-                        $piece = $gp->get_aftermove($gridpositions,$xp,$yp);
-                        
-                        if (isset($piece[2])) {
-                            if ($piece[2] !== null) {
-                                foreach($piece[2] as $p) {
-                                    $xc = $p[0];
-                                    $yc = $p[1];
-                                        //Go through current valid moves and compare x,y in grid with 
-                                        //x2,y2 (position in grid where king has moved to
-                                        foreach($temp as $tempkey=>$t) {
-                                            if ($t[0] == $x2 && $t[1] == $y2) {
-                                                echo '<b>ERROR</b>';
-                                                unset($temp[$tempkey]);
+                $gp = $fake_gridpositions[$xp][$yp];
+               
+                if ($x2 != $xp && $y2 != $yp) { //Don't check this grid because this king is on this grid. The king cannot check
+                    if ($gp !== null && $this->get_color() == $gp->get_other_players_color()) {
+                            $piece = $gp->get_aftermove($fake_gridpositions,$xp,$yp);
+                            
+                            //Piece might be checking this king
+                            if (isset($piece[2])) {
+                                if ($piece[2] !== null) {
+                                    foreach($piece[2] as $p) {
+                                        $xc = $p[0];
+                                        $yc = $p[1];
+                                            //Check if x (that king is moving to) and y (that king is moving to) is equal 
+                                            //to any square in grid
+                                            foreach($temp as $tempkey=>$t) {
+                                                if ($t[0] == $x2 && $t[1] == $y2) {
+                                                    unset($temp[$tempkey]); //Remove from valid moves     
+                                                }
+                                            }
                                     }
+                                }   
                             }
-                        }
-                }   
+                    }
+                }
             }
         }
-            }
-        }
-            
+        //End Is king chess when king has moved?
         
         return $temp;
     }
     
     public function get_aftermove($gridpositions, $x,$y) {
-
-
-
-
-        
          return array($gridpositions,'King moved');
     }    
     
