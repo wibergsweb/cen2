@@ -41,7 +41,7 @@ abstract class Piece {
     }
     
     
-    public function check_available_squares($gridpositions,$x,$y,$multi_x,$multi_y,$king_check = false) {
+    public function check_available_squares($gridpositions,$x,$y,$multi_x,$multi_y,$king_check = false,$check_other_players_color=true) {
         $vm = array();
         $xd = $x + $multi_x;
         $yd = $y + $multi_y;
@@ -112,7 +112,7 @@ abstract class Piece {
     }
     
     //This validation is done in each piece-class (pawn, knight, bishop etc)
-    abstract public function get_validmoves($gridpositions, $x,$y,$x2,$y2);
+    abstract public function get_validmoves($gridpositions, $x,$y,$x2,$y2,$check_other_players_color);
     
     //What to do after the actual move?
     abstract public function get_aftermove($gridpositions, $x,$y);

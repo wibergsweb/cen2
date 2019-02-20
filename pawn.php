@@ -13,7 +13,7 @@ class Pawn extends Piece {
         return $this->last_move;
     }
     
-    public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false) {
+    public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false,$check_other_players_color) {
         $vm = array();
         $xd = $x+$direction_x;
         $yd = $y+$direction_y;
@@ -47,7 +47,7 @@ class Pawn extends Piece {
         return $vm;
     }       
     
-    public function get_validmoves($gridpositions, $x,$y,$x2,$y2) {
+    public function get_validmoves($gridpositions, $x,$y,$x2,$y2,$check_other_players_color=true) {
         $direction = $this->main_direction;
         
         if ($this->first_move===false) {
@@ -55,7 +55,7 @@ class Pawn extends Piece {
         }
         $valid_moves = array();        
         for($i=1;$i<$this->move_steps+1;$i++) {
-            $valid_moves[] = $this->check($gridpositions,$x,$y,0,$i*$direction);  //up or down depending on direction set
+            $valid_moves[] = $this->check($gridpositions,$x,$y,0,$i*$direction,false,$check_other_players_color);  //up or down depending on direction set
         }        
 
         $check_piece_diagonal_left = null;

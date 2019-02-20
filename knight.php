@@ -13,7 +13,7 @@ class Knight extends Piece {
         $this->main_direction = $main_direction;
     }    
     
-    public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false) {
+    public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false,$check_other_players_color=true) {
         $vm = array();
         $xd = $x+$direction_x;
         $yd = $y+$direction_y;
@@ -46,16 +46,16 @@ class Knight extends Piece {
         return $vm;
     }    
     
-    public function get_validmoves($gridpositions, $x,$y,$x2,$y2) {  
+    public function get_validmoves($gridpositions, $x,$y,$x2,$y2,$check_other_players_color=true) {  
         $valid_moves = array();
-        $valid_moves[] = $this->check($gridpositions,$x,$y,-1,-2);    
-        $valid_moves[] = $this->check($gridpositions,$x,$y,1,-2);
-        $valid_moves[] = $this->check($gridpositions,$x,$y,-2,-1);
-        $valid_moves[] = $this->check($gridpositions,$x,$y,2,-1);
-        $valid_moves[] = $this->check($gridpositions,$x,$y,-1,2);
-        $valid_moves[] = $this->check($gridpositions,$x,$y,1,2);  
-        $valid_moves[] = $this->check($gridpositions,$x,$y,2,1);  
-        $valid_moves[] = $this->check($gridpositions,$x,$y,-2,1);                
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-1,-2,false,$check_other_players_color);    
+        $valid_moves[] = $this->check($gridpositions,$x,$y,1,-2,false,$check_other_players_color);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-2,-1,false,$check_other_players_color);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,2,-1,false,$check_other_players_color);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-1,2,false,$check_other_players_color);
+        $valid_moves[] = $this->check($gridpositions,$x,$y,1,2,false,$check_other_players_color);  
+        $valid_moves[] = $this->check($gridpositions,$x,$y,2,1,false,$check_other_players_color);  
+        $valid_moves[] = $this->check($gridpositions,$x,$y,-2,1,false,$check_other_players_color);                
 
         $temp = array();
         foreach($valid_moves as $vm) {
