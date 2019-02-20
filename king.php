@@ -68,8 +68,7 @@ class King extends Piece {
                             if (isset($piece[2])) {
                                 if ($piece[2] !== null) {
                                     foreach($piece[2] as $p) {
-                                        $xc = $p[0];
-                                        $yc = $p[1];
+                                        
                                             //Check if x (that king is moving to) and y (that king is moving to) is equal 
                                             //to any square in grid
                                             foreach($temp as $tempkey=>$t) {
@@ -82,7 +81,18 @@ class King extends Piece {
                                                     
                                                     //If piece is protected, then this is not a valid move for the king!
                                                     if ($protected_piece === true) {
-                                                        unset($temp[$tempkey]); //Remove from valid moves   
+                                                        //...if it is not possible for player (same player that has this king)
+                                                        //to remove the piece on this grid ($valid_x, $valid_y)
+                                                        
+                                                        //TODO: what to set for x and y? (x,y of the piece that is checking this king)
+                                                        echo 'XY=';
+                                                        var_dump($xp);
+                                                        var_dump($valid_y);
+                                                        $threatened_piece = $this->is_piece_threatened($gridpositions, $valid_x, $valid_y);
+                                                        if ($threatened_piece === true) {
+                                                            var_dump($t);
+                                                            unset($temp[$tempkey]); //Remove from valid moves   
+                                                        }                                                        
                                                     }
                                                 }
                                             }
@@ -107,7 +117,26 @@ class King extends Piece {
                 $gp = $gridpositions[$xp][$yp];               
                 if ($gp !== null && $this->get_color() === $gp->get_color() && !$gp instanceof King) { //King cannot protect any other piece
                     $valid_moves_piece_sameplayer= $gp->get_validmoves($gridpositions,$xp,$yp,$x,$y,false); //Valid movement pattern (movement pattern for pieces in same color)
-                    if (count($valid_moves_piece_sameplayer)>0) {
+                    if (count($valid_moves_piece_sameplayer)>0) {               
+                        echo 'yES';
+                        return true;
+                    }
+                }
+            }
+        }
+
+       echo 'no';
+        return false;
+    }
+    
+    //Is piece on board threatened by any piece on board?
+    private function is_piece_threatened($gridpositions,$x,$y) {
+        for($yp=0;$yp<8;$yp++) {
+            for($xp=0;$xp<8;$xp++) {
+                $gp = $gridpositions[$xp][$yp];               
+                if ($gp !== null && $this->get_color() === $gp->get_color() && !$gp instanceof King) { //King cannot protect any other piece
+                    $valid_moves_piece_sameplayer= $gp->get_validmoves($gridpositions,$xp,$yp,$x,$y); //Valid movement pattern (movement pattern for pieces in same color)
+                    if (count($valid_moves_piece_sameplayer)>0) {                        
                         return true;
                     }
                 }
@@ -115,7 +144,7 @@ class King extends Piece {
         }
 
         return false;
-    }
+    }    
     
     
     public function get_aftermove($gridpositions, $x,$y) {

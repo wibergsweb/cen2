@@ -118,7 +118,7 @@ $game->move_to(1,6,1,4); //white
 $game->move_to(7,1,7,2); //black
 
 $game->move_to(5,1,4,2); //white
-$game->move_to(3,2,4,2); //black
+$game->move_to(3,2,2,3); //black
 
 /*
 */
