@@ -46,6 +46,13 @@ abstract class Piece {
         $xd = $x + $multi_x;
         $yd = $y + $multi_y;
         
+        if ($check_other_players_color === true) {
+            $compare_color = $this->other_players_color;
+        }
+        else {
+            $compare_color = $this->get_color();
+        }
+        
         $do_check = true;
         while($do_check === true) {   
             if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
@@ -71,7 +78,7 @@ abstract class Piece {
                     }
                 }
                 
-                if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color && !$check_piece instanceof King) {
+                if ($check_piece !==null && $check_piece->get_color() === $compare_color && !$check_piece instanceof King) {
                     $vm[] = array($xd,$yd);
                     //Other player is included, but cannot go further
                     $do_check = false;

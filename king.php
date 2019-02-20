@@ -80,8 +80,9 @@ class King extends Piece {
                                                     //Is piece (that is threatening king) protected by a piece of same color (Same player)?
                                                     $protected_piece = $this->is_piece_protected($fake_gridpositions,$valid_x,$valid_y);
                                                     
-                                                    if ($protected_piece === false) {
-                                                        unset($temp[$tempkey]); //Remove from valid moves     
+                                                    //If piece is protected, then this is not a valid move for the king!
+                                                    if ($protected_piece === true) {
+                                                        unset($temp[$tempkey]); //Remove from valid moves   
                                                     }
                                                 }
                                             }
@@ -98,19 +99,21 @@ class King extends Piece {
     }
 
     
-    private function is_piece_protected($gridpositions,$x,$y,$moveto_x,$moveto_y) {
+    //Is piece that king is trying to remove
+    //protected by another piece (same color/player)?
+    private function is_piece_protected($gridpositions,$x,$y) {
         for($yp=0;$yp<8;$yp++) {
             for($xp=0;$xp<8;$xp++) {
                 $gp = $gridpositions[$xp][$yp];               
                 if ($gp !== null && $this->get_color() === $gp->get_color() && !$gp instanceof King) { //King cannot protect any other piece
-                    $valid_moves_piece_sameplayer= $gp->get_validmoves($gridpositions,$xp,$yp,$moveto_x,$moveto_y,false); //Valid movement pattern (movement pattern for pieces in same color)
+                    $valid_moves_piece_sameplayer= $gp->get_validmoves($gridpositions,$xp,$yp,$x,$y,false); //Valid movement pattern (movement pattern for pieces in same color)
                     if (count($valid_moves_piece_sameplayer)>0) {
                         return true;
                     }
                 }
             }
         }
-        
+
         return false;
     }
     

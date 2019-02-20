@@ -14,6 +14,13 @@ class Knight extends Piece {
     }    
     
     public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false,$check_other_players_color=true) {
+        if ($check_other_players_color === true) {
+            $compare_color = $this->other_players_color;
+        }
+        else {
+            $compare_color = $this->get_color();
+        }
+        
         $vm = array();
         $xd = $x+$direction_x;
         $yd = $y+$direction_y;
@@ -30,13 +37,13 @@ class Knight extends Piece {
                 }
                 else {
                     //Other players king is included, but no more valid moves in this direction
-                    if ($check_piece !== null && $check_piece->get_color() === $this->other_players_color) {
+                    if ($check_piece !== null && $check_piece->get_color() === $compare_color) {
                         $vm = array($xd,$yd); 
                         return $vm;          
                     }
                 }
                 
-            if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color && !$check_piece instanceof King) {
+            if ($check_piece !==null && $check_piece->get_color() === $compare_color && !$check_piece instanceof King) {
                 $vm = array($xd,$yd);
             }
             if ($check_piece !==null && $check_piece instanceof Passant && !$check_piece instanceof King) {
