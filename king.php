@@ -88,8 +88,9 @@ class King extends Piece {
                                                         echo 'XY=';
                                                         var_dump($xp);
                                                         var_dump($valid_y);
-                                                        $threatened_piece = $this->is_piece_threatened($gridpositions, $valid_x, $valid_y);
+                                                        $threatened_piece = $this->is_piece_threatened($fake_gridpositions, $xp, $yp);
                                                         if ($threatened_piece === true) {
+                                                            echo 'threatened';
                                                             var_dump($t);
                                                             unset($temp[$tempkey]); //Remove from valid moves   
                                                         }                                                        
@@ -117,15 +118,13 @@ class King extends Piece {
                 $gp = $gridpositions[$xp][$yp];               
                 if ($gp !== null && $this->get_color() === $gp->get_color() && !$gp instanceof King) { //King cannot protect any other piece
                     $valid_moves_piece_sameplayer= $gp->get_validmoves($gridpositions,$xp,$yp,$x,$y,false); //Valid movement pattern (movement pattern for pieces in same color)
-                    if (count($valid_moves_piece_sameplayer)>0) {               
-                        echo 'yES';
+                    if (count($valid_moves_piece_sameplayer)>0) {                                      
                         return true;
                     }
                 }
             }
         }
 
-       echo 'no';
         return false;
     }
     
