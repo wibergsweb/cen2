@@ -58,7 +58,7 @@ class Board {
                     if ($icolor>1) {
                         $icolor = 0;
                     }
-                    $html_board .= '<div id="chessindex-' . $index . '" style="text-align:center;width:100px;height:100px;font-size:64px;float:left;background:' . $col . '">';
+                    $html_board .= '<div data-x="' . $x . '" data-y="' . $y . ' . " class="square" id="chessindex-' . $index . '" style="text-align:center;width:100px;height:100px;font-size:64px;float:left;background:' . $col . '">';
                     $square_content = $this->grid_positions[$x][$y];
                     if ( $square_content !== null ) {
                         $html_board .= $this->grid_positions[$x][$y]->get_char();

@@ -6,7 +6,7 @@ $( document ).ready(function() {
     
     //Initiate and load chessboard into div
     $.ajax({
-       url: "//chessengine/chess-html.php",
+       url: "./chess-mover.php",
        dataType: 'html',
        method: 'POST',
        success: function( result ) {
@@ -16,11 +16,58 @@ $( document ).ready(function() {
 
   
   $("#chessboard").on('click', '.square', function() {
-    var closest_square = $(this).closest('.square');
-    closest_square.css('opacity', 0.5);   
-    var id_square = closest_square.attr('id');
-    var name_square = id_square.split('-');
-    var index = name_square[1];
+      var closest_square = $(this).closest('.square');
+      closest_square.css('opacity', 0.5);   
+      var square = {};
+      square.x = closest_square.attr('data-x');
+      square.y = closest_square.attr('data-y');
+
+      if ( move_from == null ) {
+         move_from = square;
+      }
+      else {
+         move_to = square;
+
+         obj = {};
+         obj.x1 = move_from.x;
+         obj.y1 = move_from.y;
+         obj.x2 = move_to.x;
+         obj.y2 = move_to.y;
+         
+         $.ajax({
+            url: "./chess-mover.php",
+            data: { movements : obj },
+            dataType: 'html',
+            method: 'POST',
+            success: function( result ) {
+               if ( result.length > 0) {
+                 $('#chessboard').html(result);
+                 move_from = null;
+                 move_to = null;                  
+               }
+               else {
+                 move_from = null;
+                 move_to = null;    
+                 $('.square').css('opacity',1);
+                   alert('wrong move');
+               }
+            },
+            error: function( result ) {
+                 move_from = null;
+                 move_to = null;      
+                 $('.square').css('opacity',1); 
+                 alert('error occured');               
+            }
+            
+         });
+
+      }
+
+      return;
+
+      console.log('x1=' );
+
+
     if ( move_from == null ) {
         move_from = index;
     }
@@ -31,7 +78,7 @@ $( document ).ready(function() {
         obj.to = move_to;
 
         $.ajax({
-           url: "//chessengine/chess-html.php",
+           url: "./chess-mover.php",
            data: { movements : obj },
            dataType: 'html',
            method: 'POST',
@@ -66,7 +113,7 @@ $( document ).ready(function() {
         obj.reset = 1;
         
         $.ajax({
-           url: "//chessengine/chess-html.php",
+           url: "./chess-mover.php",
            data: { startover : obj },
            dataType: 'html',
            method: 'POST',
