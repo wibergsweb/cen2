@@ -14,57 +14,7 @@ $( document ).ready(function() {
        }
     });
 
-  
-   $("#chessboard").on('click', '.chess-square', function() {
-    var closest_square = $(this).closest('.chess-square');
-    closest_square.css('opacity', 0.5);   
-    var id_square = closest_square.attr('id');
-    var name_square = id_square.split('-');
-    var index = name_square[1];
-
-
-    if ( move_from == null ) {
-        move_from = index;
-    }
-    else {
-        move_to = index;
-        var obj = {}
-        obj.from = move_from;
-        obj.to = move_to;
-        console.log(obj);
-
-        $.ajax({
-           url: "//cen2:8080/chess-html.php",
-           data: { movements : obj },
-           dataType: 'html',
-           method: 'POST',
-           success: function( result ) {
-              if ( result.length > 0) {
-                $('#chessboard').html(result);
-                move_from = null;
-                move_to = null;                  
-              }
-              else {
-                move_from = null;
-                move_to = null;    
-                $('.chess-square').css('opacity',1);
-                  alert('wrong move');
-              }
-           },
-           error: function( result ) {
-                move_from = null;
-                move_to = null;      
-                $('.chess-square').css('opacity',1); 
-                alert('error occured');               
-           }
-           
-        });
-
-      }
-
-   });
-
-  $("#chessboard").on('click', '.square', function() {
+   $("#chessboard").on('click', '.square', function() {
       var closest_square = $(this).closest('.square');
       closest_square.css('opacity', 0.5);   
       var square = {};
@@ -114,7 +64,7 @@ $( document ).ready(function() {
            
     });
 
-    
+   //Start new game (reset game)
    $(document).on('click', '.reset', function() {
         var obj = {}
         obj.reset = 1;
