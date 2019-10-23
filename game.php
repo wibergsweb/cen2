@@ -11,7 +11,7 @@ require_once('board.php');
 
 class Game {
     private $boardobj;
-    private $whos_turn;
+    private $whos_turn = 'black';
     private $gridpos;
     private $debug_mode = false;
        
@@ -34,6 +34,7 @@ class Game {
     
     
     public function move_to($x1,$y1,$x2,$y2) {
+        var_dump($this->whos_turn);        
         $make_move = false;
         if ($this->debug_mode === true) {
             echo 'x1=' . $x1 . ', y1=' . $y1;
@@ -84,7 +85,14 @@ class Game {
             $this->boardobj->renew($this->gridpos);
             $this->whos_turn != $this->whos_turn;
             $this->draw();
-        }        
+        }     
+        
+        if ($this->whos_turn === 'white') {
+            $this->whos_turn = 'black';
+        }
+        else {
+            $this->whos_turn = 'white';
+        }
         
     }
     
