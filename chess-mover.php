@@ -15,12 +15,14 @@ else {
 
 //These posted valeus comes from chess.js
 //
-//TODO!!! make it actually work :-)
 if ( isset($_POST['movements'])) {  
     $moves = $_POST['movements'];
-    echo json_encode($moves,true);
-    //$result = $game->$board->move_piece($from, $to);
-    //echo $result['html'];
+    $x1 = $moves['x1'];
+    $y1 = $moves['y1'];
+    $x2 = $moves['x2'];
+    $y2 = $moves['y2'];
+    $result = $game->move_to($x1,$y1,$x2,$y2);
+    echo $result['html'];
     $_SESSION['game'] = serialize($game);
 }
 else {
