@@ -15,8 +15,7 @@ class Board {
         $this->grid_positions = array_slice($gridpos, 0, count($gridpos));        
     }
     
-    public function game_start() {
-  
+    public function game_start() {  
         for($y=0;$y<8;$y++) {
             for($x=0;$x<8;$x++) {            
                 $this->grid_positions[$x][$y] = null;
@@ -45,6 +44,53 @@ class Board {
         $this->grid_positions[4][7] = new King(1);      
     }
     
+    public function move_to($x1,$y1,$x2,$y2) {
+        $make_move = false;
+        echo 'x1=' . $x1 . ', y1=' . $y1;
+         echo 'TO x2=' . $x2 . ', y2=' . $y2;
+        $this->gridpos = $this->boardobj->get_gridpositions();
+        $active_piece = $this->get_piece($x1,$y1);   
+        $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1,$x2,$y2);                
+        echo '<pre>';
+        var_dump ($valid_moves);
+        var_dump($active_piece);
+        echo '</pre>';
+
+        
+        //Make sure player only are able to go to valid locations
+        foreach($valid_moves as $vm) {
+            $check_movetox = $vm[0];
+            $check_movetoy = $vm[1];
+            if (($check_movetox == $x2) && ($check_movetoy == $y2)) {
+                $make_move = true;  
+                break;
+            }
+        }
+        
+        if ($make_move == false) {
+            echo '<h2>Invalid move. Nothing happens on board!</h2>';
+            $this->draw();
+            return;
+        }        
+
+        $this->gridpos[$x1][$y1] = null;
+        $this->gridpos[$x2][$y2] = $active_piece;
+        
+        $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
+        echo '<b>' .$after_move[1] .'</b>';    
+        
+        //Regenerate gridpos (after move)
+        $this->gridpos = array_slice($after_move[0],0,count($after_move[0]));
+        
+        if ($active_piece->get_waituser() === false) {
+            $active_piece->last_move($x2,$y2);
+            $active_piece->not_first_move();
+            $this->boardobj->renew($this->gridpos);
+            $this->draw();
+        }        
+        
+    }
+
     public function output_html() {
         $html_board = '';
         $bgcolor = array('#cccccc','#FFFFFF');
@@ -58,7 +104,7 @@ class Board {
                     if ($icolor>1) {
                         $icolor = 0;
                     }
-                    $html_board .= '<div id="chessindex-' . $index . '" style="text-align:center;width:100px;height:100px;font-size:64px;float:left;background:' . $col . '">';
+                    $html_board .= '<div class="chess-square" id="chessindex-' . $index . '" style="text-align:center;width:100px;height:100px;font-size:64px;float:left;background:' . $col . '">';
                     $square_content = $this->grid_positions[$x][$y];
                     if ( $square_content !== null ) {
                         $html_board .= $this->grid_positions[$x][$y]->get_char();

@@ -1,6 +1,14 @@
 <?php
 session_start(); //Store board-object in session (serialize / unserialize when needed)
-require_once 'board.php';
+require_once('piece.php');
+require_once('pawn.php');
+require_once('rook.php');
+require_once('knight.php');
+require_once('bishop.php');
+require_once('queen.php');
+require_once('king.php');
+require_once('passant.php');
+require_once('board.php');
 if (isset ($_POST['startover'])) {
     if ($_POST['startover']['reset'] == 1) {
         unset($_SESSION['board']);
@@ -21,6 +29,6 @@ if ( isset($_POST['movements'])) {
     $_SESSION['board'] = serialize($board);
 }
 else {
-    $result = $board->draw_board();
-    echo $result;
+    $board->game_start();
+    echo $board->output_html();
 }
