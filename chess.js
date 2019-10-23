@@ -60,6 +60,10 @@ $( document ).ready(function() {
            
         });
 
+      }
+
+   });
+
   $("#chessboard").on('click', '.square', function() {
       var closest_square = $(this).closest('.square');
       closest_square.css('opacity', 0.5);   

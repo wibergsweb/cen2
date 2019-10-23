@@ -104,11 +104,7 @@ class Board {
                     if ($icolor>1) {
                         $icolor = 0;
                     }
-<<<<<<< HEAD
-                    $html_board .= '<div class="chess-square" id="chessindex-' . $index . '" style="text-align:center;width:100px;height:100px;font-size:64px;float:left;background:' . $col . '">';
-=======
                     $html_board .= '<div data-x="' . $x . '" data-y="' . $y . '" class="square" id="chessindex-' . $index . '" style="text-align:center;width:100px;height:100px;font-size:64px;float:left;background:' . $col . '">';
->>>>>>> 44fcc9e9b09e5996a8054c695b27ab0c5a1925a3
                     $square_content = $this->grid_positions[$x][$y];
                     if ( $square_content !== null ) {
                         $html_board .= $this->grid_positions[$x][$y]->get_char();
