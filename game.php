@@ -13,29 +13,42 @@ class Game {
     private $boardobj;
     private $whos_turn;
     private $gridpos;
+    private $debug_mode = false;
        
     /*
      * $forward = -1 means white at bottom of board, 1 means white at top of board
      */
-    public function __construct($forward = -1) {
+    public function __construct($forward = -1) {        
         $backward = -abs($forward);
         $this->boardobj = new board();
-        $this->boardobj->game_start();
+        $this->boardobj->game_start();       
+        $this->draw(); 
+    }
+
+    public function set_debugmode() {
+        $this->debug_mode = true;
+    }
+    
+    public function unset_debugmode() {
+        $this->debug_mode = false;
     }
     
     
     public function move_to($x1,$y1,$x2,$y2) {
         $make_move = false;
-        echo 'x1=' . $x1 . ', y1=' . $y1;
-         echo 'TO x2=' . $x2 . ', y2=' . $y2;
+        if ($this->debug_mode === true) {
+            echo 'x1=' . $x1 . ', y1=' . $y1;
+            echo 'TO x2=' . $x2 . ', y2=' . $y2;
+        }
         $this->gridpos = $this->boardobj->get_gridpositions();
         $active_piece = $this->boardobj->get_piece($x1,$y1);   
         $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1,$x2,$y2);                
-        echo '<pre>';
-        var_dump ($valid_moves);
-        var_dump($active_piece);
-        echo '</pre>';
-
+        if ($this->debug_mode === true) {
+            echo '<pre>';
+            var_dump ($valid_moves);
+            var_dump($active_piece);
+            echo '</pre>';
+        }
         
         //Make sure player only are able to go to valid locations
         foreach($valid_moves as $vm) {
@@ -48,16 +61,20 @@ class Game {
         }
         
         if ($make_move == false) {
-            echo '<h2>Invalid move. Nothing happens on board!</h2>';
+            if ($this->debug_mode === true) {
+                echo '<h2>Invalid move. Nothing happens on board!</h2>';
+            }
             $this->draw();
             return;
         }        
 
-        $this->gridpos[$x1][$y1] = null;
-        $this->gridpos[$x2][$y2] = $active_piece;
+        $this->gridpos[$x1][$y1] = null;            //Set current square to null
+        $this->gridpos[$x2][$y2] = $active_piece;   //Set new square to actual piece that was in curent square
         
         $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
-        echo '<b>' .$after_move[1] .'</b>';    
+        if ($this->debug_mode === true) {
+            echo '<b>' .$after_move[1] .'</b>';    
+        }
         
         //Regenerate gridpos (after move)
         $this->gridpos = array_slice($after_move[0],0,count($after_move[0]));
@@ -66,6 +83,7 @@ class Game {
             $active_piece->last_move($x2,$y2);
             $active_piece->not_first_move();
             $this->boardobj->renew($this->gridpos);
+            $this->whos_turn != $this->whos_turn;
             $this->draw();
         }        
         
@@ -76,7 +94,9 @@ class Game {
         $this->gridpos[$x][$y] = $piece;
         $this->boardobj->renew($this->gridpos);
         $this->draw();    
-        echo 'User has selected piece now.';
+        if ($this->debug_mode === true) {            
+            echo 'User has selected piece now.';
+        }
     }
     
     public function draw() {
@@ -85,9 +105,12 @@ class Game {
     
     
 }
-$game = new Game();
+//$game = new Game();
 
-$game->move_to(5,6,5,4); //white
+//$game->set_debugmode();
+
+//$game->move_to(5,6,5,4); //white
+/*
 $game->move_to(6,1,6,3); //black
 
 
