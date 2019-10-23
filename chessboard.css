@@ -1,0 +1,22 @@
+.clearfix {
+    clear:both;
+    content:"";
+    display:table;
+    overflow:auto;
+}
+
+.square {
+    text-align:center;
+    width:100px;
+    height:100px;
+    font-size:64px;
+    float:left;
+}
+
+.white {
+    background:#ffffff;
+}
+
+.black {
+    background:#cccccc;
+}
