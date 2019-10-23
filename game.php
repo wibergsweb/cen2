@@ -22,7 +22,6 @@ class Game {
         $backward = -abs($forward);
         $this->boardobj = new board();
         $this->boardobj->game_start();       
-        $this->draw(); 
     }
 
     public function set_debugmode() {
