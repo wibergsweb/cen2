@@ -26,6 +26,6 @@ if ( isset($_POST['movements'])) {
     $_SESSION['game'] = serialize($game);
 }
 else {
-    //$result = $board->draw_board();
-    //echo $result;
+    $result = $game->draw();
+    echo $result;
 }
