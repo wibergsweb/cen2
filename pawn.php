@@ -30,13 +30,13 @@ class Pawn extends Piece {
                 }
                 else {
                     //Other players king is included, but no more valid moves in this direction
-                    if ($check_piece !== null && $check_piece->get_color() === $this->other_players_color) {
+                    if ($check_piece !== null && $check_piece->get_color() === $check_other_players_color) {
                         $vm = array($xd,$yd); 
                         return $vm;          
                     }
                 }
                 
-            if ($check_piece !==null && $check_piece->get_color() === $this->other_players_color && !$check_piece instanceof King) {
+            if ($check_piece !==null && $check_piece->get_color() === $check_other_players_color && !$check_piece instanceof King) {
                 $vm = array($xd,$yd);
             }
             if ($check_piece !==null && $check_piece instanceof Passant && !$check_piece instanceof King) {
@@ -118,7 +118,6 @@ class Pawn extends Piece {
                 }
             }
         }
-        
         return $valid_moves;
     }
     

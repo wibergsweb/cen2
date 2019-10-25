@@ -13,7 +13,7 @@ class Game {
     private $boardobj;
     private $whos_turn = 'black';
     private $gridpos;
-    private $debug_mode = false;
+    private $debug_mode = true;
        
     /*
      * $forward = -1 means white at bottom of board, 1 means white at top of board
@@ -34,7 +34,6 @@ class Game {
     
     
     public function move_to($x1,$y1,$x2,$y2) {
-        var_dump($this->whos_turn);        
         $make_move = false;
         if ($this->debug_mode === true) {
             echo 'x1=' . $x1 . ', y1=' . $y1;
