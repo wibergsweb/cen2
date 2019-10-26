@@ -36,11 +36,13 @@ $( document ).ready(function() {
          $.ajax({
             url: "./chess-mover.php",
             data: { movements : obj },
-            dataType: 'html',
+            dataType: 'json',
             method: 'POST',
             success: function( result ) {
-               if ( result.length > 0) {
-                 $('#chessboard').html(result);
+               console.log(result);
+
+               if ( result.board.length > 0) {
+                 $('#chessboard').html(result.board);
                  move_from = null;
                  move_to = null;                  
                }
@@ -52,6 +54,7 @@ $( document ).ready(function() {
                }
             },
             error: function( result ) {
+               alert(result);
                  move_from = null;
                  move_to = null;      
                  $('.square').css('opacity',1); 

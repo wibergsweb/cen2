@@ -43,7 +43,7 @@ class Pawn extends Piece {
                 $vm = array($xd,$yd);
             }            
         }
-        
+
         return $vm;
     }       
     

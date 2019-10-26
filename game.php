@@ -13,7 +13,7 @@ class Game {
     private $boardobj;
     private $whos_turn = 'black';
     private $gridpos;
-    private $debug_mode = true;
+    private $debug_mode = false;
        
     /*
      * $forward = -1 means white at bottom of board, 1 means white at top of board
@@ -25,7 +25,7 @@ class Game {
     }
 
     public function set_debugmode() {
-        $this->debug_mode = true;
+        $this->debug_mode = false;
     }
     
     public function unset_debugmode() {
@@ -51,8 +51,14 @@ class Game {
         
         //Make sure player only are able to go to valid locations
         foreach($valid_moves as $vm) {
-            $check_movetox = $vm[0];
-            $check_movetoy = $vm[1];
+            $check_movetox = -1;
+            $check_movetoy = -1;
+            if (isset($vm[0])) {
+                $check_movetox = $vm[0];
+            }
+            if (isset($vm[1])) {
+                $check_movetoy = $vm[1];
+            }
             if (($check_movetox == $x2) && ($check_movetoy == $y2)) {
                 $make_move = true;  
                 break;
@@ -63,8 +69,7 @@ class Game {
             if ($this->debug_mode === true) {
                 echo '<h2>Invalid move. Nothing happens on board!</h2>';
             }
-            $this->draw();
-            return;
+            return $this;
         }        
 
         $this->gridpos[$x1][$y1] = null;            //Set current square to null
@@ -83,7 +88,7 @@ class Game {
             $active_piece->not_first_move();
             $this->boardobj->renew($this->gridpos);
             $this->whos_turn != $this->whos_turn;
-            $this->draw();
+            return $this;
         }     
         
         if ($this->whos_turn === 'white') {
@@ -92,6 +97,8 @@ class Game {
         else {
             $this->whos_turn = 'white';
         }
+
+        return $this;
         
     }
     
@@ -99,14 +106,14 @@ class Game {
         $piece->last_move($x2,$y2);
         $this->gridpos[$x][$y] = $piece;
         $this->boardobj->renew($this->gridpos);
-        $this->draw();    
+        echo $this->draw();    
         if ($this->debug_mode === true) {            
             echo 'User has selected piece now.';
         }
     }
     
     public function draw() {
-        echo $this->boardobj->output_html();
+        return $this->boardobj->output_html();
     }
     
     

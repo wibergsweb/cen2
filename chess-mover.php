@@ -25,9 +25,14 @@ class Chessmover {
             $y1 = $moves['y1'];
             $x2 = $moves['x2'];
             $y2 = $moves['y2'];
-            $result = $game->move_to($x1,$y1,$x2,$y2);
-            echo $result['html'];
-            $_SESSION['game'] = serialize($game);
+            $result = array();
+            $game_obj = $game->move_to($x1,$y1,$x2,$y2);
+            $_SESSION['game'] = serialize($game_obj);
+
+            $board = $game_obj->draw();
+            $result['board'] = $board;
+            echo json_encode($result);
+
         }
         else {
             $result = $game->draw();
