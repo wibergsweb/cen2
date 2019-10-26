@@ -25,18 +25,23 @@ class Chessmover {
             $y1 = $moves['y1'];
             $x2 = $moves['x2'];
             $y2 = $moves['y2'];
-            $result = array();
-            $game_obj = $game->move_to($x1,$y1,$x2,$y2);
+            $turn = $moves['turn'];
+            $game_obj = $game->move_to($x1,$y1,$x2,$y2,$turn);
             $_SESSION['game'] = serialize($game_obj);
 
-            $board = $game_obj->draw();
-            $result['board'] = $board;
+            $result = array();
+            $result['board'] = $game_obj->draw();
+            $result['turn'] = $game_obj->get_whosturn();
+            $result['status'] = $game_obj->get_status();
             echo json_encode($result);
 
         }
         else {
-            $result = $game->draw();
-            echo $result;
+            $result = array();
+            $result['board'] = $game->draw();      
+            $result['turn'] = $game->get_whosturn();     
+            $result['status'] = $game->get_status();
+            echo json_encode($result);
         }        
     }
 }

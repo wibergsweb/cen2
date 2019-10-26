@@ -12,6 +12,7 @@
     <body>
         <h1>Cen2</h1>
         <h2>Chess engine</h2>
+        <div id="statusboard"></div>
         <div id="chessboard"></div>
         <button class="reset">Börja om från början</button>
     </body>

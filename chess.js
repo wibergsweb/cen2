@@ -1,16 +1,19 @@
 //Client
 var move_from = null;
 var move_to = null;
+var turn = null;
 
 $( document ).ready(function() { 
     
     //Initiate and load chessboard into div
+
+    
     $.ajax({
        url: "./chess-mover.php",
-       dataType: 'html',
+       dataType: 'json',
        method: 'POST',
        success: function( result ) {
-          $('#chessboard').html(result);
+            $('#chessboard').html(result.board);                
        }
     });
 
@@ -32,6 +35,7 @@ $( document ).ready(function() {
          obj.y1 = move_from.y;
          obj.x2 = move_to.x;
          obj.y2 = move_to.y;
+         obj.turn = turn;
          
          $.ajax({
             url: "./chess-mover.php",
@@ -39,22 +43,21 @@ $( document ).ready(function() {
             dataType: 'json',
             method: 'POST',
             success: function( result ) {
-               console.log(result);
-
                if ( result.board.length > 0) {
                  $('#chessboard').html(result.board);
+                 $('#statusboard').html(result.status);
+                 turn = result.turn;
                  move_from = null;
                  move_to = null;                  
                }
                else {
-                 move_from = null;
-                 move_to = null;    
-                 $('.square').css('opacity',1);
+                  move_from = null;
+                  move_to = null;    
+                  $('.square').css('opacity',1);
                    alert('wrong move');
                }
             },
             error: function( result ) {
-               alert(result);
                  move_from = null;
                  move_to = null;      
                  $('.square').css('opacity',1); 
@@ -75,10 +78,11 @@ $( document ).ready(function() {
         $.ajax({
            url: "./chess-mover.php",
            data: { startover : obj },
-           dataType: 'html',
+           dataType: 'json',
            method: 'POST',
            success: function( result ) {
-                $('#chessboard').html(result);
+                $('#chessboard').html(result.board);
+                turn = result.turn;
                 move_from = null;
                 move_to = null;                  
            }

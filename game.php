@@ -11,7 +11,8 @@ require_once('board.php');
 
 class Game {
     private $boardobj;
-    private $whos_turn = 'black';
+    private $whos_turn = 0;
+    private $status = '';
     private $gridpos;
     private $debug_mode = false;
        
@@ -24,29 +25,30 @@ class Game {
         $this->boardobj->game_start();       
     }
 
-    public function set_debugmode() {
-        $this->debug_mode = false;
+    public function get_status() {
+        return $this->status;    
     }
-    
-    public function unset_debugmode() {
-        $this->debug_mode = false;
-    }
-    
-    
-    public function move_to($x1,$y1,$x2,$y2) {
+
+    public function move_to($x1,$y1,$x2,$y2,$turn) {
+        $this->status = '';
         $make_move = false;
-        if ($this->debug_mode === true) {
-            echo 'x1=' . $x1 . ', y1=' . $y1;
-            echo 'TO x2=' . $x2 . ', y2=' . $y2;
+        if ($this->debug_mode === true) {            
+            $this->status .= '<br>x1=' . $x1 . ', y1=' . $y1;
+            $this->status .= ' TO x2=' . $x2 . ', y2=' . $y2;
         }
         $this->gridpos = $this->boardobj->get_gridpositions();
-        $active_piece = $this->boardobj->get_piece($x1,$y1);   
+        $active_piece = $this->boardobj->get_piece($x1,$y1); 
         $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1,$x2,$y2);                
+
+        //Not this user's turn
+        if (intval($turn) == intval($active_piece->get_color())) {
+            $this->status .= 'Its not your turn!';
+            return $this;
+        }
+
         if ($this->debug_mode === true) {
-            echo '<pre>';
-            var_dump ($valid_moves);
-            var_dump($active_piece);
-            echo '</pre>';
+            $this->status .= '<pre>'.print_r($valid_moves,true).'<hr>';
+            $this->status .= print_r($active_piece,true) . '</pre>';        
         }
         
         //Make sure player only are able to go to valid locations
@@ -64,10 +66,10 @@ class Game {
                 break;
             }
         }
-        
+
         if ($make_move == false) {
             if ($this->debug_mode === true) {
-                echo '<h2>Invalid move. Nothing happens on board!</h2>';
+                $this->status .= '<h2>Invalid move. Nothing happens on board!</h2>';
             }
             return $this;
         }        
@@ -77,39 +79,43 @@ class Game {
         
         $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
         if ($this->debug_mode === true) {
-            echo '<b>' .$after_move[1] .'</b>';    
+            $this->status .= '<b>' .$after_move[1] .'</b>';    
         }
         
         //Regenerate gridpos (after move)
         $this->gridpos = array_slice($after_move[0],0,count($after_move[0]));
-        
+
+        //Change whom's turn it is
+        if ($this->whos_turn == 1) {
+            $this->whos_turn = 0;
+        }
+        else {
+            $this->whos_turn = 1;
+        }
+
         if ($active_piece->get_waituser() === false) {
             $active_piece->last_move($x2,$y2);
             $active_piece->not_first_move();
             $this->boardobj->renew($this->gridpos);
-            $this->whos_turn != $this->whos_turn;
             return $this;
         }     
         
-        if ($this->whos_turn === 'white') {
-            $this->whos_turn = 'black';
-        }
-        else {
-            $this->whos_turn = 'white';
-        }
-
         return $this;
         
+    }
+
+    public function get_whosturn() {
+        return $this->whos_turn;
     }
     
     public function player_has_chosenpiece($piece,$x,$y) {        
         $piece->last_move($x2,$y2);
         $this->gridpos[$x][$y] = $piece;
         $this->boardobj->renew($this->gridpos);
-        echo $this->draw();    
         if ($this->debug_mode === true) {            
-            echo 'User has selected piece now.';
+            $this->status .= 'User has selected piece now.';
         }
+        return $this->draw();    
     }
     
     public function draw() {
@@ -118,81 +124,3 @@ class Game {
     
     
 }
-//$game = new Game();
-
-//$game->set_debugmode();
-
-//$game->move_to(5,6,5,4); //white
-/*
-$game->move_to(6,1,6,3); //black
-
-
-$game->move_to(5,4,5,3); //white
-$game->move_to(4,1,4,3); //black
-
-
-
-$game->move_to(5,3,4,2); //white
-$game->move_to(5,1,4,2); //black
-
-$game->move_to(4,6,4,5); //white
-$game->move_to(4,2,4,3); //black
-
-$game->move_to(3,7,7,3); //white
-$game->move_to(4,0,4,1); //black
-
-$game->move_to(5,7,2,4); //white
-$game->move_to(0,1,0,2); //black
-
-$game->move_to(7,3,5,1); //white
-$game->move_to(4,1,3,2); //black
-
-$game->move_to(0,6,0,5); //white
-$game->move_to(6,0,5,2); //black
-
-$game->move_to(1,6,1,4); //white
-$game->move_to(7,1,7,2); //black
-
-$game->move_to(5,1,4,2); //white
-$game->move_to(3,2,2,3); //black
-
-/*
-*/
-
-/*
-$game->move_to(4,7,5,6); //white
-$game->move_to(5,6,5,5); //white
-$game->move_to(5,5,4,4); //white
-
-$game->move_to(4,4,5,4); //white
-
-$game->move_to(5,4,6,3); //white
-
-$game->move_to(7,6,7,4); //white
-
-$game->move_to(7,7,7,5); //white
-$game->move_to(7,5,0,5); //white
-$game->move_to(0,5,0,1); //white
-$game->move_to(0,1,1,1); //white
-
-
-
-$game->move_to(0,0,0,6); //black
-
-
-$game->move_to(3,7,4,7); //white
-$game->move_to(4,7,6,5); //white
-
-$game->move_to(5,0,7,2); //black
-$game->move_to(6,0,4,1); //black
-$game->move_to(7,2,6,1); //black
-$game->move_to(6,1,7,2); //black
-$game->move_to(4,1,3,3); //black
-$game->move_to(6,3,6,2); //white
-$game->move_to(3,3,5,4); //black
-$game->move_to(3,0,6,3); //black
-$game->move_to(7,0,6,0); //black
-$game->move_to(6,2,5,2); //white
-
-$game->move_to(4,0,4,1); //black
-*/
