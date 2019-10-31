@@ -2,7 +2,7 @@
 class Bishop extends Piece {        
     public $move_steps=1;
     
-    public function get_validmoves($gridpositions, $x,$y,$x2,$y2,$check_other_players_color=true) {   
+    public function get_validmoves($gridpositions, $x,$y,$x2=null,$y2=null,$check_other_players_color=true) {   
         $valid_moves1 = $this->check_available_squares($gridpositions,$x,$y,-1,-1,false,$check_other_players_color);  //left up
         $valid_moves2 = $this->check_available_squares($gridpositions,$x,$y,1,-1,false,$check_other_players_color);   //right up      
         $valid_moves3 = $this->check_available_squares($gridpositions,$x,$y,-1,1,false,$check_other_players_color);  //left down

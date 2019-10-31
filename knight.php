@@ -26,22 +26,23 @@ class Knight extends Piece {
         $yd = $y+$direction_y;
         if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
             $check_piece = $gridpositions[$xd][$yd];
-            if ($check_piece == null) {
+            if ($check_piece === null) {
                 $vm = array($xd,$yd);
             }   
-                if ($king_check === false) {
-                    if ($check_piece !==null && $check_piece instanceof King) {
-                        //King's square is not included. Cannot go further                       
-                        return $vm;
-                    }
+
+            if ($king_check === false) {
+                if ($check_piece !==null && $check_piece instanceof King) {
+                    //King's square is not included. Cannot go further                       
+                    return $vm;
                 }
-                else {
-                    //Other players king is included, but no more valid moves in this direction
-                    if ($check_piece !== null && $check_piece->get_color() === $compare_color) {
-                        $vm = array($xd,$yd); 
-                        return $vm;          
-                    }
+            }
+            else {
+                //Other players king is included, but no more valid moves in this direction
+                if ($check_piece !== null && $check_piece->get_color() === $compare_color) {
+                    $vm = array($xd,$yd); 
+                    return $vm;          
                 }
+            }
                 
             if ($check_piece !==null && $check_piece->get_color() === $compare_color && !$check_piece instanceof King) {
                 $vm = array($xd,$yd);
@@ -53,7 +54,7 @@ class Knight extends Piece {
         return $vm;
     }    
     
-    public function get_validmoves($gridpositions, $x,$y,$x2,$y2,$check_other_players_color=true) {  
+    public function get_validmoves($gridpositions, $x,$y,$x2=0,$y2=0,$check_other_players_color=true) {  
         $valid_moves = array();
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,-2,false,$check_other_players_color);    
         $valid_moves[] = $this->check($gridpositions,$x,$y,1,-2,false,$check_other_players_color);

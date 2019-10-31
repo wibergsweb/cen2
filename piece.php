@@ -56,41 +56,43 @@ abstract class Piece {
         $do_check = true;
         while($do_check === true) {   
             if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
-                $check_piece = $gridpositions[$xd][$yd];
+                if (isset($gridpositions[$xd][$yd])) {
+                    $check_piece = $gridpositions[$xd][$yd];
 
-                if ($check_piece === null) {
-                    $vm[] = array($xd,$yd);
-                }   
-                
-                if ($king_check === false) {
-                    if ($check_piece !==null && $check_piece instanceof King) {
-                        //King's square is not included. Cannot go further
+                    if ($check_piece === null) {
+                        $vm[] = array($xd,$yd);
+                    }   
+                    
+                    if ($king_check === false) {
+                        if ($check_piece !==null && $check_piece instanceof King) {
+                            //King's square is not included. Cannot go further
+                            $do_check = false;
+                            break;
+                        }
+                    }
+                    else {
+                        //Other players king is included, but no more valid moves in this direction
+                        if ($check_piece !== null && $check_piece->get_color() === $this->other_players_color) {
+                            $vm[] = array($xd,$yd); 
+                            $do_check = false;
+                            break;                    
+                        }
+                    }
+                    
+                    if ($check_piece !==null && $check_piece->get_color() === $compare_color && !$check_piece instanceof King) {
+                        $vm[] = array($xd,$yd);
+                        //Other player is included, but cannot go further
                         $do_check = false;
                         break;
                     }
-                }
-                else {
-                    //Other players king is included, but no more valid moves in this direction
-                    if ($check_piece !== null && $check_piece->get_color() === $this->other_players_color) {
-                        $vm[] = array($xd,$yd); 
+                    if ($check_piece !==null && $check_piece->get_color() === $this->get_color() && !$check_piece instanceof Passant && !$check_piece instanceof King) {
                         $do_check = false;
-                        break;                    
-                    }
+                        break;
+                    }            
+                    if ($check_piece !==null && $check_piece instanceof Passant) {
+                        $vm[] = array($xd,$yd);
+                    }            
                 }
-                
-                if ($check_piece !==null && $check_piece->get_color() === $compare_color && !$check_piece instanceof King) {
-                    $vm[] = array($xd,$yd);
-                    //Other player is included, but cannot go further
-                    $do_check = false;
-                    break;
-                }
-                if ($check_piece !==null && $check_piece->get_color() === $this->get_color() && !$check_piece instanceof Passant && !$check_piece instanceof King) {
-                    $do_check = false;
-                    break;
-                }            
-                if ($check_piece !==null && $check_piece instanceof Passant) {
-                    $vm[] = array($xd,$yd);
-                }            
             }
             else {
                 //Outside chessboard

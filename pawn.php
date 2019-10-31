@@ -47,7 +47,7 @@ class Pawn extends Piece {
         return $vm;
     }       
     
-    public function get_validmoves($gridpositions, $x,$y,$x2,$y2,$check_other_players_color=true) {
+    public function get_validmoves($gridpositions, $x,$y,$x2=null,$y2=null,$check_other_players_color=true) {
         $direction = $this->main_direction;
         
         if ($this->first_move===false) {
@@ -156,7 +156,7 @@ class Pawn extends Piece {
         }
         if ($y===0 && $direction === -1) {
             $this->wait_user = true; //Wait for user to select piece
-            return 'Choose your piece';
+            return array($gridpositions, 'Choose your piece');
         }
         if ($y===7 && $direction === 1) {
             $this->wait_user = true; //Wait for user to select piece

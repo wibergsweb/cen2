@@ -14,7 +14,7 @@ class Game {
     private $whos_turn = 0;
     private $status = '';
     private $gridpos;
-    private $debug_mode = false;
+    private $debug_mode = true;
        
     /*
      * $forward = -1 means white at bottom of board, 1 means white at top of board

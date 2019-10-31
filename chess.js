@@ -58,10 +58,11 @@ $( document ).ready(function() {
                }
             },
             error: function( result ) {
-                 move_from = null;
-                 move_to = null;      
-                 $('.square').css('opacity',1); 
-                 alert('error occured');               
+               console.log(result.responseText);
+               move_from = null;
+               move_to = null;      
+               $('.square').css('opacity',1); 
+               alert('error occured');               
             }
             
          });
