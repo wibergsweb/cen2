@@ -20,7 +20,7 @@ class King extends Piece {
                 $vm = array($xd,$yd);
             }
             else if ($check_piece !== null && $this->get_color() != $check_piece->get_color()) {
-                $vm = array($xd, $yd);
+                    $vm = array($xd, $yd);
             }
 
 
@@ -88,13 +88,65 @@ class King extends Piece {
         }
         //End Is king chess when king has moved?
         
+        
+        //Valid moves for the other king is NOT valid moves for this king
+        for($yp=0;$yp<8;$yp++) {
+            for($xp=0;$xp<8;$xp++) {
+                $piece = $fake_gridpositions[$xp][$yp];
+                if ($piece !== null) {
+                    if ($piece instanceof King && $this->get_color() != $piece->get_color()) {                        
+                        $otherplayers_king_x = $xp;
+                        $otherplayers_king_y = $yp;
+                        
+                        //We use the original gridpositions here because we need to check valid 
+                        //moves for other king before movement of this king
+                        $validmoves_otherking = array();
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,-1,0);       //left
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,1,0);        //right
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,0,1);        //check down
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,0,-1);       //check up
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,-1,-1);      //check up left
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,1,-1);       //check up right
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,-1,1);       //check down left
+                        $validmoves_otherking[] = $this->check($gridpositions,$xp,$yp,1,1);        //check down right   
+                        break;
+                    }
+                }
+            }
+        }
+
+        foreach($valid_moves as $vm_key => $vm) {
+            if (!empty($vm)) {
+                $vmx = $vm[0];
+                $vmy = $vm[1];
+
+                //Check in other king's valid moves and remove
+                //from this kings valid moves if they exist for this king
+                //(because king cannot stand beside the other king)
+                foreach($validmoves_otherking as $vmok_key => $vmok) {
+                    if (!empty($vmok)) {
+                        $vmok_x = $vmok[0];
+                        $vmok_y = $vmok[1];
+                        if ($vmok_x == $vmx && $vmok_y == $vmy) {
+                            unset($valid_moves[$vm_key]);
+                        }
+                    }
+                }                
+            }
+        }
+
+        
+
+
         $temp = array();
         foreach($valid_moves as $vm) {
             if (!empty($vm)) {
                 $temp[] = $vm;
             }
         }
+        error_log("\r\n" . 'FINAL valid moves ' . print_r($temp,true),3,'./error.log');
 
+        
         return $temp;
     }
 
