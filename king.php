@@ -13,12 +13,17 @@ class King extends Piece {
         $yd = $y+$direction_y;
         if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
             $check_piece = $gridpositions[$xd][$yd];
-            if ($check_piece == null) {
+            if ($check_piece === null) {
                 $vm = array($xd,$yd);
             }   
-            if ($check_piece !==null && $check_piece instanceof Passant) {
+            else if ($check_piece !==null && $check_piece instanceof Passant) {
                 $vm = array($xd,$yd);
             }
+            else if ($check_piece !== null && $this->get_color() != $check_piece->get_color()) {
+                $vm = array($xd, $yd);
+            }
+
+
             
         }
         
@@ -29,8 +34,8 @@ class King extends Piece {
         $valid_moves = array();
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,0);       //left
         $valid_moves[] = $this->check($gridpositions,$x,$y,1,0);        //right
-        $valid_moves[] = $this->check($gridpositions,$x,$y,0,1);        //check up
-        $valid_moves[] = $this->check($gridpositions,$x,$y,0,-1);       //check down
+        $valid_moves[] = $this->check($gridpositions,$x,$y,0,1);        //check down
+        $valid_moves[] = $this->check($gridpositions,$x,$y,0,-1);       //check up
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,-1);      //check up left
         $valid_moves[] = $this->check($gridpositions,$x,$y,1,-1);       //check up right
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,1);       //check down left
@@ -61,7 +66,7 @@ class King extends Piece {
                             if (stristr($aftermove[1],'chess') !== false) {
                                 //IF above position (Where piece checks king) is included
                                 //in valid moves, then remove this validity
-                                //$x2 and $y2 is the king's position in grid
+                                //$x2 and $y2 is the king's position in original grid
                                 foreach($valid_moves as $vm_key => $vm) {
                                     if (!empty($vm)) {
                                         $vmx = $vm[0];

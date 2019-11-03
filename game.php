@@ -15,6 +15,7 @@ class Game {
     private $status = '';
     private $gridpos;
     private $debug_mode = true;
+    private $checked_state = false;
        
     /*
      * $forward = -1 means white at bottom of board, 1 means white at top of board
@@ -32,7 +33,7 @@ class Game {
     public function move_to($x1,$y1,$x2,$y2,$turn) {
         $this->status = '';
         $make_move = false;
-        if ($this->debug_mode === true) {            
+        if ($this->debug_mode === true) {          
             $this->status .= '<br>x1=' . $x1 . ', y1=' . $y1;
             $this->status .= ' TO x2=' . $x2 . ', y2=' . $y2;
         }
@@ -67,21 +68,50 @@ class Game {
             }
         }
 
+  
+
+        //If chess is active (in checked state) and you don't move the king
+        //then it's in invalid move. You have to move the king when you're in chess.
+        if ($this->checked_state === true) {
+            for($yp=0;$yp<8;$yp++) {
+                for($xp=0;$xp<8;$xp++) {
+                    $piece = $this->gridpos[$xp][$yp];
+                    if ($piece !== null && !$active_piece instanceof King) {
+                        $aftermove = $piece->get_aftermove($this->gridpos,$xp,$yp);
+                        if (!empty($aftermove)) {
+                            if (stristr($aftermove[1],'chess') !== false) {
+                                $make_move = false;        
+                                if ($this->debug_mode === true) {                                                        
+                                    $this->status .= 'King is in chess. You have to move king.';
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         if ($make_move == false) {
             if ($this->debug_mode === true) {
                 $this->status .= '<h2>Invalid move. Nothing happens on board!</h2>';
             }
             return $this;
-        }        
+        }              
 
         $this->gridpos[$x1][$y1] = null;            //Set current square to null
         $this->gridpos[$x2][$y2] = $active_piece;   //Set new square to actual piece that was in curent square
         
         $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
-        if ($this->debug_mode === true) {
-            $this->status .= '<b>' .$after_move[1] .'</b>';    
+        $this->status .= '<b>' .$after_move[1] .'</b>';    
+
+        if (stristr($after_move[1],'chess') !== false) {
+            $this->checked_state = true;
         }
-        
+        else {
+            $this->checked_state = false;
+        }
+
         //Regenerate gridpos (after move)
         $this->gridpos = array_slice($after_move[0],0,count($after_move[0]));
 
