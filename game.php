@@ -99,8 +99,10 @@ class Game {
                                     } 
                                 }   
                                 else {
-                                    if ($this->debug_mode === true) {                                                        
-                                        $this->status .= '<strong>Check by ' . get_class($piece) . ' (not neccesarily directly)</strong><br>';
+                                    if ($this->debug_mode === true) {     
+                                        if (get_class($piece) != get_class($active_piece)) {                                                   
+                                            $this->status .= '<strong>Check by ' . get_class($piece) . ' (not directly)</strong><br>';
+                                        }
                                     } 
 
                                 }                                                                                             
