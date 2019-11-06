@@ -68,29 +68,51 @@ class Game {
             }
         }
 
-  
+        //Regenerate temporary gridpos (to make it possible to check if player is chess
+        //after move without affecthing this actual object's gridpos)
+        $temp_gridpos = array_slice($this->gridpos,0,count($this->gridpos));
+        $temp_gridpos[$x1][$y1] = null;            //Set current square to null
+        $temp_gridpos[$x2][$y2] = $active_piece;   //Set new grid to actual piece that was in current grid
+        $after_move = $active_piece->get_aftermove($temp_gridpos,$x2,$y2);
+        $temp_gridpos = array_slice($after_move[0],0,count($after_move[0]));
 
-        //If chess is active (in checked state) and you don't move the king
-        //then it's in invalid move. You have to move the king when you're in chess.
         if ($this->checked_state === true) {
+            //Go through whole board and check if some piece is
+            //checking the king on the new position
+            $found_checked = 0;
             for($yp=0;$yp<8;$yp++) {
                 for($xp=0;$xp<8;$xp++) {
-                    $piece = $this->gridpos[$xp][$yp];
-                    if ($piece !== null && !$active_piece instanceof King) {
-                        $aftermove = $piece->get_aftermove($this->gridpos,$xp,$yp);
-                        if (!empty($aftermove)) {
-                            if (stristr($aftermove[1],'chess') !== false) {
-                                $make_move = false;        
-                                if ($this->debug_mode === true) {                                                        
-                                    $this->status .= 'King is in chess. You have to move king.';
+                    $piece = $temp_gridpos[$xp][$yp];
+                    if ($piece !== null && !$piece instanceof King) {
+                        //Get valid moves for each piece on board and check
+                        //if any piece is checking this king
+                        $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2,$y2);
+                        
+                        if (!empty($validmoves_piece)) {
+                            $aftermove = $piece->get_aftermove($temp_gridpos,$xp,$yp);
+                            if (!empty($aftermove)) {
+                                if (stristr($aftermove[1],'chess') !== false) {                                     
+                                    $make_move = false;
+                                    if ($this->debug_mode === true) {                                                        
+                                        $this->status .= 'King is in chess. You have to move (or protect if possible) king.';
+                                    }   
+                                    $found_checked++;
                                 }
-                                break;
                             }
                         }
                     }
                 }
             }
+            if ($found_checked == 0) {
+                $this->checked_state = false;
+            }
         }
+        else {
+            //Checked state is false
+            if (stristr($after_move[1],'chess') !== false) {
+                $this->checked_state = true;
+            }
+        }        
 
         if ($make_move == false) {
             if ($this->debug_mode === true) {
@@ -99,18 +121,11 @@ class Game {
             return $this;
         }              
 
-        $this->gridpos[$x1][$y1] = null;            //Set current square to null
-        $this->gridpos[$x2][$y2] = $active_piece;   //Set new square to actual piece that was in curent square
+        $this->gridpos[$x1][$y1] = null;            //Set current grid to null
+        $this->gridpos[$x2][$y2] = $active_piece;   //Set new grid to actual piece that was in current square
         
         $after_move = $active_piece->get_aftermove($this->gridpos,$x2,$y2);
         $this->status .= '<b>' .$after_move[1] .'</b>';    
-
-        if (stristr($after_move[1],'chess') !== false) {
-            $this->checked_state = true;
-        }
-        else {
-            $this->checked_state = false;
-        }
 
         //Regenerate gridpos (after move)
         $this->gridpos = array_slice($after_move[0],0,count($after_move[0]));

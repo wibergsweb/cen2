@@ -63,7 +63,7 @@ class King extends Piece {
                     if (!empty($validmoves_piece)) {
                         $aftermove = $piece->get_aftermove($fake_gridpositions,$xp,$yp);
                         if (!empty($aftermove)) {
-                            if (stristr($aftermove[1],'chess') !== false) {
+                            if (stristr($aftermove[1],'chess') !== false) {                                
                                 //IF above position (Where piece checks king) is included
                                 //in valid moves, then remove this validity
                                 //$x2 and $y2 is the king's position in original grid
@@ -90,6 +90,7 @@ class King extends Piece {
         
         
         //Valid moves for the other king is NOT valid moves for this king
+        //(Make sure kings cannot stand besides eachother)
         for($yp=0;$yp<8;$yp++) {
             for($xp=0;$xp<8;$xp++) {
                 $piece = $fake_gridpositions[$xp][$yp];
@@ -144,8 +145,6 @@ class King extends Piece {
                 $temp[] = $vm;
             }
         }
-        error_log("\r\n" . 'FINAL valid moves ' . print_r($temp,true),3,'./error.log');
-
         
         return $temp;
     }
