@@ -76,38 +76,47 @@ class Game {
         $after_move = $active_piece->get_aftermove($temp_gridpos,$x2,$y2);
         $temp_gridpos = array_slice($after_move[0],0,count($after_move[0]));
 
-        if ($this->checked_state === true) {
-            //Go through whole board and check if some piece is
-            //checking the king on the new position
-            $found_checked = 0;
-            for($yp=0;$yp<8;$yp++) {
-                for($xp=0;$xp<8;$xp++) {
-                    $piece = $temp_gridpos[$xp][$yp];
-                    if ($piece !== null && !$piece instanceof King) {
-                        //Get valid moves for each piece on board and check
-                        //if any piece is checking this king
-                        $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2,$y2);
-                        
-                        if (!empty($validmoves_piece)) {
-                            $aftermove = $piece->get_aftermove($temp_gridpos,$xp,$yp);
-                            if (!empty($aftermove)) {
-                                if (stristr($aftermove[1],'chess') !== false) {                                     
+        //Go through whole board and check if some piece is
+        //checking the king on the new position
+        $found_checked = 0;
+        for($yp=0;$yp<8;$yp++) {
+            for($xp=0;$xp<8;$xp++) {
+                $piece = $temp_gridpos[$xp][$yp];
+                if ($piece !== null && !$piece instanceof King) {
+                    //Get valid moves for each piece on board and check
+                    //if any piece is checking this king
+                    $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2,$y2);
+                    
+                    if (!empty($validmoves_piece)) {
+                        $aftermove = $piece->get_aftermove($temp_gridpos,$xp,$yp);
+                        if (!empty($aftermove)) {
+                            if (stristr($aftermove[1],'chess') !== false) { 
+                                //Only invalid if same player's piece
+                                if (intval($turn) == intval($piece->get_color())) {
                                     $make_move = false;
                                     if ($this->debug_mode === true) {                                                        
                                         $this->status .= 'King is in chess. You have to move (or protect if possible) king.';
-                                    }   
-                                    $found_checked++;
-                                }
+                                    } 
+                                }   
+                                else {
+                                    if ($this->debug_mode === true) {                                                        
+                                        $this->status .= '<strong>Check by ' . get_class($piece) . ' (not neccesarily directly)</strong><br>';
+                                    } 
+
+                                }                                                                                             
+                                 
+                                $found_checked++;
                             }
                         }
                     }
                 }
             }
-            if ($found_checked == 0) {
-                $this->checked_state = false;
-            }
         }
-        else {
+        if ($found_checked == 0) {
+            $this->checked_state = false;
+        }
+
+        if ($this->checked_state === false) {
             //Checked state is false
             if (stristr($after_move[1],'chess') !== false) {
                 $this->checked_state = true;
