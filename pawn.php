@@ -134,10 +134,17 @@ class Pawn extends Piece {
         }        
         $check_piece_diagonal_left = null;
         $check_piece_diagonal_right = null;
-        if ($x>0 && $x<7 && $y>0 && $y<7) {
-            $check_piece_diagonal_left = $gridpositions[$x-1][$y+$direction];
-            $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction];
-            
+        if ($x>-1 && $x<8 && $y>0 && $y<7) {
+
+            //Don't check outer lefter and outer right of board when checking if
+            //player can check
+            if ($x>0) {
+                $check_piece_diagonal_left = $gridpositions[$x-1][$y+$direction];
+            }
+            if ($x<7) {
+                $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction];
+            }
+
             if ($check_piece_diagonal_left !== null) {
                 $piece_color = $check_piece_diagonal_left->get_color();
                 if ($piece_color===$this->other_players_color && $check_piece_diagonal_left instanceof King) {

@@ -5,7 +5,6 @@ abstract class Piece {
     public $last_move;
     public $other_players_color = null;    
     public $main_direction = null;  //Up (-1) or down (1) on board?
-    public $checked_state = false;
     
     public function __construct($color, $main_direction=null) {
         $this->color = $color;
