@@ -40,21 +40,45 @@ class King extends Piece {
         //Castling
         $this->castling = false;
         if ($this->get_firstmove() === true) {
-            if ($y==0 || $y==7 ) {                
+            if ($y==0 || $y==7 ) { 
+                
+                //Short castling (to the right)
                 if ($x2 == $x+2) {       
                     $rook = $gridpositions[7][$y]; 
                     if ($rook->get_firstmove() === true) {
-                        $this->castling = true;
-                        $valid_moves[] = array($x+2,$y); //Short castling (to the right)
-                        $this->rookpos = array(7,$y,$x+1,$y); //First two values are current pos of rook. Rook should be set to the left of king
+                        //No pieces between king and rook are allowed to do a castling
+                        $nr_pieces = 0;
+                        for($xpiece=$x+1;$xpiece<7;$xpiece++) {
+                            if ($gridpositions[$xpiece][$y] !== null) {
+                                $nr_pieces++;
+                                break;
+                            }        
+                        }
+                        if ($nr_pieces == 0) {
+                            $this->castling = true;                        
+                            $valid_moves[] = array($x+2,$y); 
+                            $this->rookpos = array(7,$y,$x+1,$y); //First two values are current pos of rook. Rook should be set to the left of king
+                        }
                     }                              
                 }
+
+                //Long castling (to the left)
                 if ($x2 == $x-2) {
                     $rook = $gridpositions[0][$y];
                     if ($rook->get_firstmove() === true) {
-                        $this->castling = true;
-                        $valid_moves[] = array($x-2,$y); //Long castling (to the left)
-                        $this->rookpos = array(0,$y,$x-1,$y); //First two values are current pos of rook. Rook should be set to the right of king
+                        //No pieces between king and rook are allowed to do a castling
+                        $nr_pieces = 0;
+                        for($xpiece=$x-1;$xpiece>0;$xpiece--) {
+                            if ($gridpositions[$xpiece][$y] !== null) {
+                                $nr_pieces++;
+                                break;
+                            }        
+                        }
+                        if ($nr_pieces == 0) {
+                            $this->castling = true;
+                            $valid_moves[] = array($x-2,$y); 
+                            $this->rookpos = array(0,$y,$x-1,$y); //First two values are current pos of rook. Rook should be set to the right of king
+                        }
                     }
                 }
             }
