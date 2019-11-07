@@ -1,6 +1,8 @@
 <?php
 abstract class Piece {
     public $first_move = true;
+    public $castling = false;
+    public $rookpos = array();
     public $color; //0 = black, 1 = white
     public $last_move;
     public $other_players_color = null;    

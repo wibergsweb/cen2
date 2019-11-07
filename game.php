@@ -30,14 +30,21 @@ class Game {
         return $this->status;    
     }
 
-    public function move_to($x1,$y1,$x2,$y2,$turn) {
+    public function move_to($x1,$y1,$x2,$y2,$turn,$gridpos=null) {
         $this->status = '';
         $make_move = false;
         if ($this->debug_mode === true) {          
             $this->status .= '<br>x1=' . $x1 . ', y1=' . $y1;
             $this->status .= ' TO x2=' . $x2 . ', y2=' . $y2;
         }
-        $this->gridpos = $this->boardobj->get_gridpositions();
+
+        if ($gridpos === null) {
+            $this->gridpos = $this->boardobj->get_gridpositions();
+        }
+        else if (is_array($gridpos)) {
+            $this->gridpos = array_slice($gridpos,0,count($gridpos));
+        }
+
         $active_piece = $this->boardobj->get_piece($x1,$y1); 
         $valid_moves = $active_piece->get_validmoves($this->gridpos,$x1,$y1,$x2,$y2);                
 
@@ -148,6 +155,23 @@ class Game {
         else {
             $this->whos_turn = 1;
         }
+        
+        //Is castling? (Move rook when king has moved?)
+        if ($active_piece->castling === true) {
+            $movecastling_arr = array_slice($active_piece->rookpos,0,count($active_piece->rookpos));
+            $rook_movefrom_x = $active_piece->rookpos[0];
+            $rook_movefrom_y = $active_piece->rookpos[1];
+            $rook_moveto_x = $active_piece->rookpos[2];
+            $rook_moveto_y = $active_piece->rookpos[3];
+            
+            //Move actual rook.
+            $this->gridpos[$rook_movefrom_x][$rook_movefrom_y] = null;
+            $this->gridpos[$rook_moveto_x][$rook_moveto_y] = new Rook($this->whos_turn);
+            $active_piece->castling = false; //Make sure not eternity loop
+            $this->move_to($rook_movefrom_x,$rook_movefrom_y,$rook_moveto_x,$rook_moveto_y,$this->whos_turn,$this->gridpos);      
+        }
+
+
 
         if ($active_piece->get_waituser() === false) {
             $active_piece->last_move($x2,$y2);

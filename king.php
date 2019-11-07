@@ -38,6 +38,25 @@ class King extends Piece {
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,1);       //check down left
         $valid_moves[] = $this->check($gridpositions,$x,$y,1,1);        //check down right      
         
+        //Castling
+        $this->castling = false;
+        if ($this->first_move === true) {
+            if ($y==0 || $y==7 ) {                
+                if ($x2 == $x+2) {       
+                    $rook = $gridpositions[7][$y];           
+                    $this->castling = true;
+                    $valid_moves[] = array($x+2,$y); //Short castling (to the right)
+                    $this->rookpos = array(7,$y,$x+1,$y); //First two values are current pos of rook. Rook should be set to the left of king
+                }
+                if ($x2 == $x-2) {
+                    $rook = $gridpositions[0][$y];
+                    $this->castling = true;
+                    $valid_moves[] = array($x-2,$y); //Long castling (to the left)
+                    $this->rookpos = array(0,$y,$x-1,$y); //First two values are current pos of rook. Rook should be set to the right of king
+                }
+            }
+        }
+
         //Valid moves for the other king is NOT valid moves for this king
         //(Make sure kings cannot stand besides eachother)
         $king = $gridpositions[$x][$y];
