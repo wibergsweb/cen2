@@ -149,13 +149,8 @@ class Game {
         $this->gridpos = array_slice($after_move[0],0,count($after_move[0]));
 
         //Change whom's turn it is
-        if ($this->whos_turn == 1) {
-            $this->whos_turn = 0;
-        }
-        else {
-            $this->whos_turn = 1;
-        }
-        
+        $this->whos_turn = ($this->whos_turn == 0 ? 1 : 0);
+                
         //Is castling? (Move rook when king has moved?)
         if ($active_piece->castling === true) {
             $movecastling_arr = array_slice($active_piece->rookpos,0,count($active_piece->rookpos));
@@ -165,13 +160,12 @@ class Game {
             $rook_moveto_y = $active_piece->rookpos[3];
             
             //Move actual rook.
+            $rook = $this->gridpos[$rook_movefrom_y][$rook_movefrom_y];
             $this->gridpos[$rook_movefrom_x][$rook_movefrom_y] = null;
-            $this->gridpos[$rook_moveto_x][$rook_moveto_y] = new Rook($this->whos_turn);
+            $this->gridpos[$rook_moveto_x][$rook_moveto_y] = $rook;
             $active_piece->castling = false; //Make sure not eternity loop
-            $this->move_to($rook_movefrom_x,$rook_movefrom_y,$rook_moveto_x,$rook_moveto_y,$this->whos_turn,$this->gridpos);      
+            $this->move_to($rook_movefrom_x,$rook_movefrom_y,$rook_moveto_x,$rook_moveto_y,$this->get_whosturn(),$this->gridpos);      
         }
-
-
 
         if ($active_piece->get_waituser() === false) {
             $active_piece->last_move($x2,$y2);

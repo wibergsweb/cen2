@@ -5,9 +5,6 @@ class Pawn extends Piece {
     public $passant_square = null;
     public $last_move = array();     //array of x,y
 
-    public function get_firstmove() {
-        return $this->first_move;
-    }
     
     public function get_last_move() {
         return $this->last_move;
@@ -50,7 +47,7 @@ class Pawn extends Piece {
     public function get_validmoves($gridpositions, $x,$y,$x2=null,$y2=null,$check_other_players_color=true) {
         $direction = $this->main_direction;
         
-        if ($this->first_move===false) {
+        if ($this->get_firstmove() === false) {
             $this->move_steps = 1;
         }
         $valid_moves = array();        

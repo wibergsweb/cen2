@@ -1,6 +1,6 @@
 <?php
 abstract class Piece {
-    public $first_move = true;
+    private $first_move = true;
     public $castling = false;
     public $rookpos = array();
     public $color; //0 = black, 1 = white
@@ -22,11 +22,14 @@ abstract class Piece {
     public function get_color() {
         return $this->color;
     }
+
+    public function get_firstmove() {
+        return $this->first_move;
+    }
     
     public function get_other_players_color() {
         return $this->other_players_color;
-    }
-    
+    }    
     
     public function check_chess($gridpositions, $valid_moves) {
         foreach($valid_moves as $vm) {
@@ -111,7 +114,6 @@ abstract class Piece {
         return $vm;
     }
 
-    
     public function last_move($x,$y) {
         $this->last_move = array($x,$y);
     }

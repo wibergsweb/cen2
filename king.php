@@ -1,7 +1,6 @@
 <?php
 class King extends Piece {
     public $is_chess = false;
-    public $temp_valid_moves = array();
     
     public function is_chess() {
         $this->is_chess = true;
@@ -40,19 +39,23 @@ class King extends Piece {
         
         //Castling
         $this->castling = false;
-        if ($this->first_move === true) {
+        if ($this->get_firstmove() === true) {
             if ($y==0 || $y==7 ) {                
                 if ($x2 == $x+2) {       
-                    $rook = $gridpositions[7][$y];           
-                    $this->castling = true;
-                    $valid_moves[] = array($x+2,$y); //Short castling (to the right)
-                    $this->rookpos = array(7,$y,$x+1,$y); //First two values are current pos of rook. Rook should be set to the left of king
+                    $rook = $gridpositions[7][$y]; 
+                    if ($rook->get_firstmove() === true) {
+                        $this->castling = true;
+                        $valid_moves[] = array($x+2,$y); //Short castling (to the right)
+                        $this->rookpos = array(7,$y,$x+1,$y); //First two values are current pos of rook. Rook should be set to the left of king
+                    }                              
                 }
                 if ($x2 == $x-2) {
                     $rook = $gridpositions[0][$y];
-                    $this->castling = true;
-                    $valid_moves[] = array($x-2,$y); //Long castling (to the left)
-                    $this->rookpos = array(0,$y,$x-1,$y); //First two values are current pos of rook. Rook should be set to the right of king
+                    if ($rook->get_firstmove() === true) {
+                        $this->castling = true;
+                        $valid_moves[] = array($x-2,$y); //Long castling (to the left)
+                        $this->rookpos = array(0,$y,$x-1,$y); //First two values are current pos of rook. Rook should be set to the right of king
+                    }
                 }
             }
         }
@@ -108,9 +111,6 @@ class King extends Piece {
                 }                
             }
         }
-
-        
-
 
         $temp = array();
         foreach($valid_moves as $vm) {
