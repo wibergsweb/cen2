@@ -46,18 +46,50 @@ class King extends Piece {
                 if ($x2 == $x+2) {       
                     $rook = $gridpositions[7][$y]; 
                     if ($rook->get_firstmove() === true) {
+                        $temp_gridpos = array_slice($gridpositions, 0, count($gridpositions));
+                        
                         //No pieces between king and rook are allowed to do a castling
                         $nr_pieces = 0;
                         for($xpiece=$x+1;$xpiece<7;$xpiece++) {
-                            if ($gridpositions[$xpiece][$y] !== null) {
-                                $nr_pieces++;
-                                break;
-                            }        
+                            if ($temp_gridpos[$xpiece][$y] !== null) {
+                                $nr_pieces++;   
+                                break;                             
+                            }      
                         }
                         if ($nr_pieces == 0) {
-                            $this->castling = true;                        
-                            $valid_moves[] = array($x+2,$y); 
-                            $this->rookpos = array(7,$y,$x+1,$y); //First two values are current pos of rook. Rook should be set to the left of king
+                            //Empty grids between king and rook...
+                                //The king does not pass through a square that is attacked (in chess)
+                                //by an other players piece. Move around king in temp gridpos to simulate
+                                //kings position (to see if it would be in chess between king and rook)
+                                $otherplayer_attacking = false;
+                                for($xpiece=$x+1;$xpiece<7;$xpiece++) {
+                                    $temp_gridpos[$xpiece][$y] = new King($this->get_color());
+                                }
+
+                                for($yp=0;$yp<8;$yp++) {
+                                    for($xp=0;$xp<8;$xp++) {
+                                        $piece = $temp_gridpos[$xp][$yp];
+                                        if ($piece !== null && !$piece instanceof King) {
+                                            for($xpiece=$x+1;$xpiece<7;$xpiece++) {
+                                                $validmoves_piece = $piece->get_validmoves($xp, $yp, $xpiece, $y);
+                                                if (!empty($validmoves_piece)) {
+                                                    $aftermove = $piece->get_aftermove($temp_gridpos,$xp,$yp);
+
+                                                    if (stristr($aftermove[1],'chess') !== false) {
+                                                        $otherplayer_attacking = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                    
+                            if ($otherplayer_attacking === false) {
+                                $this->castling = true;                        
+                                $valid_moves[] = array($x+2,$y); 
+                                $this->rookpos = array(7,$y,$x+1,$y); //First two values are current pos of rook. Rook should be set to the left of king
+                            }
                         }
                     }                              
                 }
@@ -69,15 +101,45 @@ class King extends Piece {
                         //No pieces between king and rook are allowed to do a castling
                         $nr_pieces = 0;
                         for($xpiece=$x-1;$xpiece>0;$xpiece--) {
-                            if ($gridpositions[$xpiece][$y] !== null) {
-                                $nr_pieces++;
-                                break;
-                            }        
+                            if ($temp_gridpos[$xpiece][$y] !== null) {
+                                $nr_pieces++;   
+                                break;                             
+                            }   
                         }
                         if ($nr_pieces == 0) {
-                            $this->castling = true;
-                            $valid_moves[] = array($x-2,$y); 
-                            $this->rookpos = array(0,$y,$x-1,$y); //First two values are current pos of rook. Rook should be set to the right of king
+                                //Empty grids between king and rook...
+                                //The king does not pass through a square that is attacked (in chess)
+                                //by an other players piece. Move around king in temp gridpos to simulate
+                                //kings position (to see if it would be in chess between king and rook)
+                                $otherplayer_attacking = false;
+                                for($xpiece=$x+1;$xpiece<7;$xpiece++) {
+                                    $temp_gridpos[$xpiece][$y] = new King($this->get_color());
+                                }
+                                
+                                for($yp=0;$yp<8;$yp++) {
+                                    for($xp=0;$xp<8;$xp++) {
+                                        $piece = $temp_gridpos[$xp][$yp];
+                                        if ($piece !== null && !$piece instanceof King) {
+                                            for($xpiece=$x-1;$xpiece>0;$xpiece--) {
+                                                $validmoves_piece = $piece->get_validmoves($xp, $yp, $xpiece, $y);
+                                                if (!empty($validmoves_piece)) {
+                                                    $aftermove = $piece->get_aftermove($temp_gridpos,$xp,$yp);
+                                                    
+                                                    if (stristr($aftermove[1],'chess') !== false) {
+                                                        $otherplayer_attacking = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            if ($otherplayer_attacking === false) {
+                                $this->castling = true;
+                                $valid_moves[] = array($x-2,$y); 
+                                $this->rookpos = array(0,$y,$x-1,$y); //First two values are current pos of rook. Rook should be set to the right of king
+                            }
                         }
                     }
                 }
