@@ -98,6 +98,8 @@ class King extends Piece {
                 if ($x2 == $x-2) {
                     $rook = $gridpositions[0][$y];
                     if ($rook->get_firstmove() === true) {
+                        $temp_gridpos = array_slice($gridpositions, 0, count($gridpositions));
+                        
                         //No pieces between king and rook are allowed to do a castling
                         $nr_pieces = 0;
                         for($xpiece=$x-1;$xpiece>0;$xpiece--) {

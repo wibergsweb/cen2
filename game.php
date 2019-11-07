@@ -14,7 +14,7 @@ class Game {
     private $whos_turn = 0;
     private $status = '';
     private $gridpos;
-    private $debug_mode = true;
+    private $debug_mode = false;
     private $checked_state = false;
        
     /*
