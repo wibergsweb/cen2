@@ -39,7 +39,7 @@ class King extends Piece {
         
         //Castling
         $this->castling = false;
-        if ($this->get_firstmove() === true) {
+        if ($this->get_firstmove() === true && isset($x2) && isset($y2)) {
             if ($y==0 || $y==7 ) { 
                 
                 //Short castling (to the right)
@@ -99,7 +99,7 @@ class King extends Piece {
                     $rook = $gridpositions[0][$y];
                     if ($rook->get_firstmove() === true) {
                         $temp_gridpos = array_slice($gridpositions, 0, count($gridpositions));
-                        
+
                         //No pieces between king and rook are allowed to do a castling
                         $nr_pieces = 0;
                         for($xpiece=$x-1;$xpiece>0;$xpiece--) {

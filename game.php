@@ -124,6 +124,54 @@ class Game {
         if ($found_checked == 0) {
             $this->checked_state = false;
         }
+        else {
+            //Check if king is chess mate
+            for($yp=0;$yp<8;$yp++) {
+                for($xp=0;$xp<8;$xp++) {                    
+                    $piece = $temp_gridpos[$xp][$yp];
+                    if ($piece !== null && $piece instanceof King && $piece->get_color() != $active_piece->get_color()) {                        
+                        $validmoves_king = $piece->get_validmoves($temp_gridpos,$xp,$yp,$xp,$yp);                        
+
+                        //If every possible move for king is chess
+                        //then it's chess mate
+                        $possible_moves = count($validmoves_king);
+                        foreach($validmoves_king as $vmk) {
+                            $kx = $vmk[0];
+                            $ky = $vmk[1];
+                            $king = $temp_gridpos[$kx][$ky];
+                            
+                            //Is any piece attacking the king here?
+                            //Then narrow down possible moves
+                            for($ypk=0;$yp<8;$yp++) {
+                                for($xpk=0;$xp<8;$xp++) {
+                                    $cpiece = $temp_gridpos[$xpk][$ypk];
+                                    if ($cpiece !== null && !$cpiece instanceof King) {
+                                        $validmoves_piece = $cpiece->get_validmoves($temp_gridpos, $xpk, $ypk, $kx,$ky);
+                                        $this->status .= 'valid moves piece: ' . print_r($validmoves_piece, true) . '<br>';
+                                        if (!empty($validmoves_piece)) {
+                                            $aftermove = $cpiece->get_aftermove($temp_gridpos,$kx,$ky);
+                                            if (!empty($aftermove)) {
+                                                if (stristr($aftermove[1],'chess') !== false) { 
+                                                    $possible_moves--;
+                                                }
+                                            }
+                                        }                                        
+                                    }
+                                }
+                            }
+                            $this->status .= 'POSSIBLE MOVES FOR KING: ' . $possible_moves . '<br>';
+                        }
+
+                        if ($possible_moves == 0) {
+                            $this->status .= 'CHESS MATE!';
+                            return $this;
+                        }
+
+
+                    }
+                }
+            }
+        }
 
         if ($this->checked_state === false) {
             //Checked state is false
