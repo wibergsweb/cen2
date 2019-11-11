@@ -164,16 +164,20 @@ class Game {
                             }
                         }
 
-                        if ($possible_moves == 0) {
-                            //TODO check if any piece can remove the attacking piece (Active piece)
-                            
-                            $this->status .= 'CHESS MATE!'; 
-                            $this->check_mate = true;       
-                        }
+
 
                     }
                 }
             }
+
+            if ($possible_moves == 0) {
+                //TODO check if any piece can remove the attacking piece (Active piece)
+                
+                $this->status .= 'CHESS MATE!'; 
+                $this->check_mate = true;       
+            }
+            
+            
         }
 
         if ($this->checked_state === false) {
