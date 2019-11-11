@@ -126,20 +126,22 @@ class Game {
             $this->checked_state = false;
         }
         else {
-            //Check if king is check mate
+            $possible_moves = 110; //Possible moves for king if not going through any of loops below...
+
+            //King is checked... Check if king is check mate
             for($yp=0;$yp<8;$yp++) {
                 for($xp=0;$xp<8;$xp++) {                    
                     $piece = $temp_gridpos[$xp][$yp];
                     if ($piece !== null && $piece instanceof King && $piece->get_color() != $active_piece->get_color()) {                        
                         $validmoves_king = $piece->get_validmoves($temp_gridpos,$xp,$yp,$xp,$yp);                        
-
+                        
                         //If every possible move for king is chess
                         //then it's check mate
                         $possible_moves = count($validmoves_king);
+                        $this->status .= 'possible moves=' . $possible_moves . '<br>';
                         foreach($validmoves_king as $vmk) {
                             $kx = $vmk[0];
                             $ky = $vmk[1];
-                            $king = $temp_gridpos[$kx][$ky];
                             
                             //Is any piece checking the king when it moves
                             //to any of the king's possible moves? Then narrow down possible moves
@@ -159,9 +161,9 @@ class Game {
                                     }
                                 }
                             }
-                            if ($this->debug_mode === true) {
+                            
                                 $this->status .= 'POSSIBLE MOVES FOR KING: ' . $possible_moves . '<br>';
-                            }
+                            
                         }
 
 
@@ -170,11 +172,49 @@ class Game {
                 }
             }
 
+            $this->status .= 'NEXT CHECK - possible moves: ' . $possible_moves . '<br><hr>';
             if ($possible_moves == 0) {
                 //TODO check if any piece can remove the attacking piece (Active piece)
-                
+                for($yp=0;$yp<8;$yp++) {
+                    for($xp=0;$xp<8;$xp++) {                    
+                        $piece = $temp_gridpos[$xp][$yp];
+                        if ($piece !== null && !$piece instanceof King && $piece->get_color() != $active_piece->get_color()) {
+                            $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2, $y2);
+                            if (!empty($validmoves_piece)) {
+                                $this->status .= 'GRIDPOS AT ' . $xp . ',' . $yp .'<br>';
+                                $this->status .= 'valid moves piece: ' . print_r($validmoves_piece,true);
+
+                                foreach($validmoves_piece as $vmp) {
+                                    if (isset($vmp[0]) && isset($vmp[1])) {
+                                        $piece_x = $vmp[0];
+                                        $piece_y = $vmp[1];
+                                        //If the active piece (checking piece) is within valid moves 
+                                        //for any piece then the piece that is checking the king 
+                                        //could be removed by this piece and therefore this is NOT check mate
+                                        $this->status .= '<br>compare ' . $piece_x . ',' . $piece_y . ' with ' . $x2 . ',' . $y2 . '<br><br><hr>';
+                                        if ($piece_x == $x2 && $piece_y == $y2) {
+                                            if ($temp_gridpos[$piece_x][$piece_y]->get_color() != $active_piece->get_color()) {
+                                                $this->status .= '<b>Its not check mate!!</b><br>';
+                                                $possible_moves = 1; //"fake" that there are possible moves for king so check mate is not set
+                                                break;
+    
+                                            }
+                                        }                                
+                                    }
+                                }
+
+                            }
+
+                        }    
+                    }
+                }
+                            
+            }
+
+
+            if ($possible_moves == 0) {
                 $this->status .= 'CHESS MATE!'; 
-                $this->check_mate = true;       
+                $this->check_mate = true;   
             }
             
             
