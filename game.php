@@ -16,6 +16,7 @@ class Game {
     private $gridpos;
     private $debug_mode = false;
     private $checked_state = false;
+    private $check_mate = false;
        
     /*
      * $forward = -1 means white at bottom of board, 1 means white at top of board
@@ -125,7 +126,7 @@ class Game {
             $this->checked_state = false;
         }
         else {
-            //Check if king is chess mate
+            //Check if king is check mate
             for($yp=0;$yp<8;$yp++) {
                 for($xp=0;$xp<8;$xp++) {                    
                     $piece = $temp_gridpos[$xp][$yp];
@@ -133,21 +134,20 @@ class Game {
                         $validmoves_king = $piece->get_validmoves($temp_gridpos,$xp,$yp,$xp,$yp);                        
 
                         //If every possible move for king is chess
-                        //then it's chess mate
+                        //then it's check mate
                         $possible_moves = count($validmoves_king);
                         foreach($validmoves_king as $vmk) {
                             $kx = $vmk[0];
                             $ky = $vmk[1];
                             $king = $temp_gridpos[$kx][$ky];
                             
-                            //Is any piece attacking the king here?
-                            //Then narrow down possible moves
+                            //Is any piece checking the king when it moves
+                            //to any of the king's possible moves? Then narrow down possible moves
                             for($ypk=0;$ypk<8;$ypk++) {
                                 for($xpk=0;$xpk<8;$xpk++) {
                                     $cpiece = $temp_gridpos[$xpk][$ypk];
-                                    if ($cpiece !== null && !$cpiece instanceof King) {
+                                    if ($cpiece !== null && !$cpiece instanceof King && $cpiece->get_color() == $active_piece->get_color()) {
                                         $validmoves_piece = $cpiece->get_validmoves($temp_gridpos, $xpk, $ypk, $kx,$ky);
-                                        $this->status .= 'valid moves piece: ' . print_r($validmoves_piece, true) . '<br>';
                                         if (!empty($validmoves_piece)) {
                                             $aftermove = $cpiece->get_aftermove($temp_gridpos,$xpk,$ypk);
                                             if (!empty($aftermove)) {
@@ -159,13 +159,17 @@ class Game {
                                     }
                                 }
                             }
-                            $this->status .= 'POSSIBLE MOVES FOR KING: ' . $possible_moves . '<br>';
+                            if ($this->debug_mode === true) {
+                                $this->status .= 'POSSIBLE MOVES FOR KING: ' . $possible_moves . '<br>';
+                            }
                         }
 
                         if ($possible_moves == 0) {
-                            $this->status .= 'CHESS MATE!';                            
+                            //TODO check if any piece can remove the attacking piece (Active piece)
+                            
+                            $this->status .= 'CHESS MATE!'; 
+                            $this->check_mate = true;       
                         }
-
 
                     }
                 }
