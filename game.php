@@ -142,14 +142,14 @@ class Game {
                             
                             //Is any piece attacking the king here?
                             //Then narrow down possible moves
-                            for($ypk=0;$yp<8;$yp++) {
-                                for($xpk=0;$xp<8;$xp++) {
+                            for($ypk=0;$ypk<8;$ypk++) {
+                                for($xpk=0;$xpk<8;$xpk++) {
                                     $cpiece = $temp_gridpos[$xpk][$ypk];
                                     if ($cpiece !== null && !$cpiece instanceof King) {
                                         $validmoves_piece = $cpiece->get_validmoves($temp_gridpos, $xpk, $ypk, $kx,$ky);
                                         $this->status .= 'valid moves piece: ' . print_r($validmoves_piece, true) . '<br>';
                                         if (!empty($validmoves_piece)) {
-                                            $aftermove = $cpiece->get_aftermove($temp_gridpos,$kx,$ky);
+                                            $aftermove = $cpiece->get_aftermove($temp_gridpos,$xpk,$ypk);
                                             if (!empty($aftermove)) {
                                                 if (stristr($aftermove[1],'chess') !== false) { 
                                                     $possible_moves--;
@@ -163,8 +163,7 @@ class Game {
                         }
 
                         if ($possible_moves == 0) {
-                            $this->status .= 'CHESS MATE!';
-                            return $this;
+                            $this->status .= 'CHESS MATE!';                            
                         }
 
 
