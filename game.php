@@ -224,6 +224,12 @@ class Game {
                                         $xk = $vmk[0];
                                         $yk = $vmk[1];    
                                         if ($xk == $x2 && $yk == $y2) {
+                                            //If Pawn is attacking it must be diagonally
+                                            if ($piece instanceof Pawn) {
+                                                if ($xk == $x2) {
+                                                    continue;
+                                                }
+                                            }
                                             $this->status .= 'attacker can be removed by another piece.<br>';
                                             $attacker_can_be_removed = true;
                                             break;
