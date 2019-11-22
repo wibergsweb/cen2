@@ -95,7 +95,7 @@ class Game {
         for($yp=0;$yp<8;$yp++) {
             for($xp=0;$xp<8;$xp++) {
                 $piece = $temp_gridpos[$xp][$yp];
-                if ($piece !== null && !$piece instanceof King) {
+                if ($piece !== null && !$piece instanceof King && $piece->get_color() != $this->get_whosturn()) {
                     //Get valid moves for each piece on board and check
                     //if any piece is checking this king
                     $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2,$y2);
@@ -105,7 +105,7 @@ class Game {
                         if (!empty($aftermove)) {
                             if (stristr($aftermove[1],'chess') !== false) { 
                                 //Only invalid if same player's piece
-                                if (intval($turn) == intval($piece->get_color())) {
+                                if (intval($this->get_whosturn()) == intval($piece->get_color())) {
                                     $make_move = false;
                                     if ($this->debug_mode === true) {                                                        
                                         $this->status .= 'King is in chess. You have to move (or protect if possible) king.';
@@ -230,7 +230,7 @@ class Game {
                                                     continue;
                                                 }
                                             }
-                                            $this->status .= 'attacker can be removed by another piece.<br>';
+                                            $this->status .= 'attacker can be removed by another piece (piece located at ' . $xp.','.$yp . '<br>';
                                             $attacker_can_be_removed = true;
                                             break;
                                         }                       
