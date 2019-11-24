@@ -241,9 +241,10 @@ class Game {
                     }
                 }
 
-                if ($attacker_can_be_removed === false && $possible_moves == 0) {
+                if ($attacker_can_be_removed === false) {
                     $this->status .= '<b>CHESS MATE!</b>'; 
                     $this->check_mate = true; 
+                    $make_move = false;
                 }
 
             }
@@ -291,6 +292,7 @@ class Game {
             $this->gridpos[$rook_movefrom_x][$rook_movefrom_y] = null;
             $this->gridpos[$rook_moveto_x][$rook_moveto_y] = $rook;
             $active_piece->castling = false; //Make sure not eternity loop
+            $this->whos_turn = ($this->whos_turn == 0 ? 1 : 0); 
             $this->move_to($rook_movefrom_x,$rook_movefrom_y,$rook_moveto_x,$rook_moveto_y,$this->get_whosturn(),$this->gridpos);      
         }
 
