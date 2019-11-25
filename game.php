@@ -89,13 +89,18 @@ class Game {
         $after_move = $active_piece->get_aftermove($temp_gridpos,$x2,$y2);
         $temp_gridpos = array_slice($after_move[0],0,count($after_move[0]));
 
+        if ($this->debug_mode === true) {
+            $this->status .= 'CHECKING THIS BOARD:<br>';
+            $this->status .= $this->boardobj->output_html($temp_gridpos) . '<br><br>';
+        }
+
         //Go through whole board and check if some piece is
         //checking the king on the new position
         $found_checked = 0;
         for($yp=0;$yp<8;$yp++) {
             for($xp=0;$xp<8;$xp++) {
                 $piece = $temp_gridpos[$xp][$yp];
-                if ($piece !== null && !$piece instanceof King && $piece->get_color() != $this->get_whosturn()) {
+                if ($piece !== null && !$piece instanceof King) { //IMPORTANT. DONT CHECK COLOR HERE!!!!
                     //Get valid moves for each piece on board and check
                     //if any piece is checking this king
                     $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2,$y2);
@@ -105,21 +110,21 @@ class Game {
                         if (!empty($aftermove)) {
                             if (stristr($aftermove[1],'chess') !== false) { 
                                 //Only invalid if same player's piece
-                                if (intval($this->get_whosturn()) == intval($piece->get_color())) {
+                                if ($piece->get_color() == $this->get_whosturn()) {
                                     $make_move = false;
                                     if ($this->debug_mode === true) {                                                        
                                         $this->status .= 'King is in chess. You have to move (or protect if possible) king.';
                                     } 
                                 }   
                                 else {
-                                    if ($this->debug_mode === true) {     
+                                    //if ($this->debug_mode === true) {     
                                         if (get_class($piece) != get_class($active_piece)) {                                                   
                                             $this->status .= '<strong>Check by ' . get_class($piece) . ' (not directly)</strong><br>';
                                         }
-                                    } 
+                                    //} 
 
                                 }                                                                                             
-                                 
+                                
                                 $found_checked++;
                             }
                         }
@@ -132,9 +137,7 @@ class Game {
         if ($found_checked == 0) {
             $this->checked_state = false;
         }
-        else if ($found_checked>0) {
-            
-           
+        else if ($found_checked>0) {          
             $king = null;
             for($yp=0;$yp<8;$yp++) {
                 for($xp=0;$xp<8;$xp++) {                    
@@ -165,38 +168,69 @@ class Game {
             //If every possible move for king is chess
             //then it's check mate
             $possible_moves = count($validmoves_king);
-            $this->status .= 'possible moves=' . $possible_moves . '<br>';
 
             $temp_gridpos[$x1][$y1] = null;            //Set current grid to null
             $temp_gridpos[$x2][$y2] = $active_piece;   //Set new grid to actual piece that was in current square
             
+            if ($this->debug_mode === true) {
+                $this->status .= 'possible moves=' . $possible_moves . '<br>';
+                $this->status .= 'VALID MOVES KING=' . json_encode($validmoves_king,true) .'<hr>';
+            }
+
+            $checked_gridpos = array();
+
             foreach($validmoves_king as $vmk) {
                 $king_moveto_x = $vmk[0];
                 $king_moveto_y = $vmk[1];
-                         
+                
                 $temp_gridpos[$king_moveto_x][$king_moveto_y] = $king; 
                 $temp_gridpos[$king_x][$king_y] = null;
+                if ($this->debug_mode === true) {
+                    $this->status .= '<hr>';
+                    $this->status .= '<b>KING</b> POS: ' . $king_moveto_x . ',' . $king_moveto_y . '<br>';
+                    $this->status .= $this->boardobj->output_html($temp_gridpos) . '<br><br>';
+                }
+                
                    
                 for($yp=0;$yp<8;$yp++) {
                     for($xp=0;$xp<8;$xp++) {
                         $piece = $temp_gridpos[$xp][$yp];
-                        
-                        if ($piece !== null && !$piece instanceof King && $this->get_whosturn() != $piece->get_color()) {
+
+                         if ($piece !== null && !$piece instanceof King && $this->get_whosturn() != $piece->get_color()) {
                             $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $king_moveto_x, $king_moveto_y);                    
                                 if (!empty($validmoves_piece)) {
                                 $aftermove = $piece->get_aftermove($temp_gridpos,$xp,$yp);
                                 if (!empty($aftermove)) {
                                     if (stristr($aftermove[1],'chess') !== false) { 
-                                        $possible_moves--;
-                                        //if ($this->debug_mode === true) {
-                                            $this->status .= 'check from position: ' . $xp .','.$yp . '<br>';
-                                            $this->status .= 'possible moves: ' . $possible_moves . '<br>';
-                                            $this->status .= '<hr>';
-                                        //}
+
+                                        //ONLY VALID If checking on current kings position...                                  
+                                        //but check ONLY once for each gridpos!     
+                                        $check_already = false;
+                                        foreach($checked_gridpos as $cg) {
+                                            $xgrid = $cg[0];
+                                            $ygrid = $cg[1];
+                                            if ($xgrid == $king_moveto_x && $ygrid == $king_moveto_y) {
+                                                $check_already = true;
+                                            }
+                                        }
+
+                                        if ($check_already === false) {
+                                            $checked_gridpos[] = array($king_moveto_x, $king_moveto_y);
+                                            $possible_moves--;
+                                            if ($this->debug_mode === true) {
+                                                $this->status .= 'possible moves: ' . $possible_moves . '<br>';
+                                                $this->status .= '<hr>';
+                                                $this->status .= 'CHECKED GRIDPOS: ' . json_encode($checked_gridpos,true) . '<br>';
+                                            }
+                                        }
+
+                                        
                                     }
                                 }
                             }
                         }
+
+                        
                     }
                 }                
                 
@@ -205,20 +239,27 @@ class Game {
             }
 
         
-        
+            
 
+            if (intval($possible_moves) == 0) {
+                if ($this->debug_mode === true) {
+                    $this->status .= 'POSSIBLE MOVES IS ZERO... IS IT POSSIBLE TO ATTACK THE CHECKING PIECE?';
+                }
 
-            if (intval($possible_moves) <= 0) {
-                //The king cannot move. Is it possible to attacking player
-                //with another piece?
+                //Is it possible to remove the piece that is checking?
                 $attacker_can_be_removed = false;
-
+            
                 for($yp=0;$yp<8;$yp++) {
                     for($xp=0;$xp<8;$xp++) {
                         $piece = $temp_gridpos[$xp][$yp];                        
                         if ($piece !== null && !$piece instanceof King && $this->get_whosturn() == $piece->get_color()) {
-                            $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2, $y2);                                      
+                            $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2, $y2);     
+                           
                             if (!empty($validmoves_piece)) {
+                                if ($this->debug_mode === true) {
+                                    $this->status .= 'check get valid moves for piece at ' . $xp . ',' . $yp . '--> ' . json_encode($validmoves_piece,true) . '<br>' ;
+                                }
+                                
                                 foreach($validmoves_piece as $vmk) {  
                                     if (isset($vmk[0]) && isset($vmk[1])) { 
                                         $xk = $vmk[0];
@@ -241,14 +282,12 @@ class Game {
                     }
                 }
 
-                if ($attacker_can_be_removed === false) {
+                if ($attacker_can_be_removed === false && $possible_moves == 0) {
                     $this->status .= '<b>CHESS MATE!</b>'; 
                     $this->check_mate = true; 
-                    $make_move = false;
                 }
 
             }
-            
 
         }
         
@@ -292,7 +331,6 @@ class Game {
             $this->gridpos[$rook_movefrom_x][$rook_movefrom_y] = null;
             $this->gridpos[$rook_moveto_x][$rook_moveto_y] = $rook;
             $active_piece->castling = false; //Make sure not eternity loop
-            $this->whos_turn = ($this->whos_turn == 0 ? 1 : 0); 
             $this->move_to($rook_movefrom_x,$rook_movefrom_y,$rook_moveto_x,$rook_moveto_y,$this->get_whosturn(),$this->gridpos);      
         }
 

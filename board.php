@@ -49,7 +49,11 @@ class Board {
 
     //Create the actual chessboard with chesspieces
     //based on gridpositions array
-    public function output_html() {
+    public function output_html($grid_positions = null) {
+        if ($grid_positions === null) {
+            $grid_positions = array_slice($this->grid_positions,0,count($this->grid_positions));        
+        }
+
         $html_board = '';
         $bgcolor = array('black','white');
         $icolor = 1;
@@ -63,9 +67,9 @@ class Board {
                         $icolor = 0;
                     }
                     $html_board .= '<div data-x="' . $x . '" data-y="' . $y . '" class="square ' . $col . '">';
-                    $square_content = $this->grid_positions[$x][$y];
+                    $square_content = $grid_positions[$x][$y];
                     if ( $square_content !== null ) {
-                        $html_board .= $this->grid_positions[$x][$y]->get_char();
+                        $html_board .= $grid_positions[$x][$y]->get_char();
                     }
                     else {
                         $html_board .= '&nbsp;';
