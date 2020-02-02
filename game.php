@@ -274,7 +274,9 @@ class Game {
                                                     continue;
                                                 }
                                             }
-                                            $this->status .= 'attacker can be removed by another piece (piece located at ' . $xp.','.$yp . '<br>';
+                                            if ($this->debug_mode === true) {
+                                                $this->status .= 'attacker can be removed by another piece (piece located at ' . $xp.','.$yp . '<br>';
+                                            }
                                             $attacker_can_be_removed = true;
                                             break;
                                         }      
@@ -293,95 +295,92 @@ class Game {
 
                 if ($attacker_can_be_removed === false && $possible_moves == 0) {
                     //Possible moves are zero and attacker cannot be removed, but
-                    //is it possible to move piece so attacker is not checking anymore?                       
+                    //is it possible to move piece (in front of king maybe) so attacker is not checking anymore?  
+                    $temp_gridpos = array_slice($orignal_gridpos,0,count($orignal_gridpos));
+
                     $temp_gridpos[$x1][$y1] = null;            //Set current grid to null
                     $temp_gridpos[$x2][$y2] = $active_piece;   //Set new grid to actual piece that was in current square
-   
                     
-                    
+                    //We make the assumption that this is checkmate
+                    $checkmate = true;
 
-                    $this->status .= 'CHECKER PIECE AT: ' . $x2 . ',' . $y2.'<br>';
+                    //Get valid moves of the piece that is checking
                     $checkerpiece = $temp_gridpos[$x2][$y2];
                     $checkerpiece_validmoves = $checkerpiece->get_validmoves($temp_gridpos, $x2, $y2, $original_king_x, $original_king_y);
-                    $this->status .= 'VALID MOVES FOR CHECKERPIECE: ' . print_r($checkerpiece_validmoves,true) . '<br>';
 
-                    $still_chess = true;
-                    $found_checked = 0;
-
-                    for($yp=0;$yp<8;$yp++) {
-                        for($xp=0;$xp<8;$xp++) {
-                            $temp_gridpos = array_slice($orignal_gridpos,0,count($orignal_gridpos));
-
-                            $piece = $temp_gridpos[$xp][$yp];                        
-                            if ($piece !== null && !$piece instanceof King && $this->get_whosturn() == $piece->get_color()) {
-                                $this->status .= 'checking ' . $xp . ',' . $yp . '<br>';
-                                $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2, $y2); 
-                                $this->status .= json_encode($validmoves_piece, true) . '<br><hr><br>';
-                              
-
-                                //Fill all possible valid moves on temporary board
-                                foreach($validmoves_piece as $vmp) {
-                                    if (!empty($vmp)) {
-                                        $xpp = $vmp[0];
-                                        $ypp = $vmp[1];
-                                        $this->status .= 'FILLING x,y AT ' . $xpp . ',' . $ypp . '<br>';
-                                        $this->status .= 'CURRENT PIECE: ' .print_r($piece,true) . '<br>';
-                                        if ($temp_gridpos[$xpp][$ypp] === null && !$piece instanceof King) {                                                                                        
-                                            $temp_gridpos[$xpp][$ypp] = $piece;
-                                            $temp_gridpos[$xp][$yp] = null;
-                                        }
-                                    }
-                                }
-                                $this->status .= $this->boardobj->output_html($temp_gridpos) . '<br><br>';
-
-
-                                //Go through whole board and check if some piece is
-                                //checking the king on the new position NOW after board is
-                                //filled with all possible moves for current color that player
-                                //is 
+                    foreach($checkerpiece_validmoves as $cpvm) {
+                        $x_cpvm = $cpvm[0];
+                        $y_cpvm = $cpvm[1];
+                        
+                        //Go through all board for user that is checked (and see if 
+                        //it's possible to move so it's not chess anymore
+                        for($yp=0;$yp<8;$yp++) {
+                            for($xp=0;$xp<8;$xp++) {
+                                $piece = $temp_gridpos[$xp][$yp];
                                 
-                               
-                                for($yp_chess=0;$yp_chess<8;$yp_chess++) {
-                                    for($xp_chess=0;$xp_chess<8;$xp_chess++) {
-                                        $piece = $temp_gridpos[$xp_chess][$yp_chess];
-                                        if ($piece !== null && !$piece instanceof King && $piece->get_color() == $this->get_whosturn()) {
-                                            //Get valid moves for each piece on board and check
-                                            //if any piece is checking this king
-                                            $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp_chess, $yp_chess, $original_king_y,$original_king_y);
-                                            $this->status .= 'X from : ' .$xp_chess . ', Y from: ' . $yp_chess . '<br>';
-                                            $this->status .= 'X TO: ' . $original_king_x . ', Yto: '. $original_king_y . '<br><hr>';
+                                if ($piece !== null && !$piece instanceof King && $piece->get_color() == $this->get_whosturn()) {
+                                    //Each valid move for this player                                    
+                                    $validmoves_piece = $piece->get_validmoves($temp_gridpos,$xp,$yp,$x_cpvm,$y_cpvm);     
 
-                                            if (!empty($validmoves_piece)) {
-                                                $aftermove = $piece->get_aftermove($temp_gridpos,$xp_chess,$yp_chess);
-                                                if (!empty($aftermove)) {
-                                                    if (stristr($aftermove[1],'chess') !== false) { 
-                                                        $this->status .= '<br><br><br><b> CHESS at</b> ' . $xp_chess . ',' . $yp_chess;
-                                                        $found_checked++;
-                                                        break;
-                                                    }
-                                                }
+                                    //This tells that any piece of this user on board
+                                    //maybe can move to any square the checking piece can
+                                    if (!empty($validmoves_piece)) {                                       
+
+                                        //Check in array (valid moves of current piece in loop)
+                                        $can_move_to_dest = false;
+                                        foreach($validmoves_piece as $vp) {
+   
+                                            if (!empty($vp[0]) && !empty($vp[1])) {
+                                                if ($vp[0] == $x_cpvm && $vp[1] == $y_cpvm) {
+                                                    $can_move_to_dest = true;
+                                                    break;
+                                                }   
                                             }
                                         }
+
+                                        if ($can_move_to_dest === true) {
+
+                                            //It's confirmed that user can move to same square the checker piece can
+                                            //After that move, is it still chess? 
+                                            //If NO, then it's NOT checkmate
+                                            $temp_backup = array_slice($temp_gridpos, 0, count($temp_gridpos));
+
+                                            //Put current piece (in loop) temporarily at this position
+                                            $temp_gridpos[$x_cpvm][$y_cpvm] = $piece; 
+                                            $after_move = $checkerpiece->get_aftermove($temp_gridpos,$x2,$y2); 
+
+                                            $temp_gridpos = array_slice($temp_backup, 0, count($temp_backup));
+
+                                            if (!empty($after_move)) {
+                                                
+                                                //If not chess longer when a piece moves, then it cannot be not checkmate
+                                                if (stristr($after_move[1],'chess') === false) {
+                                                    if ($this->debug_mode === true) {
+                                                        $this->status .= 'NOT A CHECKMATE';
+                                                    }
+                                                    $checkmate = false;
+                                                }
+                                            }
+                                            
+                                        break;
+                                        }
+
+                                       
+                                   
                                     }
+
                                 }
                                 
-
-
-
-
-
-
                             }
                         }
                     }
 
-                    if ($found_checked > 0) {
-                    $this->status .= '<b>CHESS MATE!</b>'; 
+                    if ($checkmate === true) {
+                        $this->status .= '<h2>CHECK MATE!!!!</h2>';
+                        $this->check_mate = true;
                     }
-                    else {
-                        $this->status .= 'KING COULD BE PROTECTED!!!';
-                    }
-                    //$this->check_mate = true; 
+
+                    
                 }
 
             }
