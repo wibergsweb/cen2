@@ -61,6 +61,14 @@ class Pawn extends Piece {
             $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction];
             $check_piece_diagonal_left = $gridpositions[$x-1][$y+$direction];  
         }
+        //When at left or right of the board then check only one direction depending on which side
+        //player is on
+        if ($x == 0) {
+            $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction]; 
+        }
+        if ($x == 7) {
+            $check_piece_diagonal_left = $gridpositions[$x-1][$y+$direction];  
+        }
 
         if ($check_piece_diagonal_left !== null) {
             
@@ -77,7 +85,7 @@ class Pawn extends Piece {
                         $last = $gridpositions[$x-1][$y]->get_last_move();
                         $last_x = $last[0];
                         $last_y = $last[1];
-                        if ($x-1 === $last_x && $y == $last_y) {
+                        if ($x-1 == $last_x && $y == $last_y) {
                             $is_valid = true;
                         }
                     }
@@ -114,7 +122,7 @@ class Pawn extends Piece {
                     $valid_moves[] = array($x+1,$y+$direction);
                 }
             }
-        }
+        }        
         return $valid_moves;
     }
     
