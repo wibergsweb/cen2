@@ -79,14 +79,16 @@ class Pawn extends Piece {
                 if ($check_piece_diagonal_left instanceof Passant) {
                     $is_valid = false;
                     
-                    //Check left piece (is it other players pawn?)
+                    //Check piece to the left side of this pawn  (is it other players pawn?)
                     if ($piece_color===$this->other_players_color && $gridpositions[$x-1][$y] instanceof Pawn) {
                         //Previous move in game (other players pawn)
                         $last = $gridpositions[$x-1][$y]->get_last_move();
-                        $last_x = $last[0];
-                        $last_y = $last[1];
-                        if ($x-1 == $last_x && $y == $last_y) {
-                            $is_valid = true;
+                        if (isset($last[0]) && isset($last[1])) {
+                            $last_x = $last[0];
+                            $last_y = $last[1];
+                            if ($x-1 == $last_x && $y == $last_y) {
+                                $is_valid = true;
+                            }
                         }
                     }
                 }
@@ -106,14 +108,16 @@ class Pawn extends Piece {
                 if ($check_piece_diagonal_right instanceof Passant) {
                     $is_valid = false;
                     
-                    //Check left piece (is it other players pawn?)
+                    //Check piece to the right side of this pawn (is it other players pawn?)
                     if ($piece_color===$this->other_players_color && $gridpositions[$x+1][$y] instanceof Pawn) {
                             //Previous move in game (other players pawn)
                             $last = $gridpositions[$x+1][$y]->get_last_move();
-                            $last_x = $last[0];
-                            $last_y = $last[1];
-                            if ($x+1 === $last_x && $y == $last_y) {
-                                $is_valid = true;
+                            if (isset($last[0]) && isset($last[1])) {
+                                $last_x = $last[0];
+                                $last_y = $last[1];
+                                if ($x+1 === $last_x && $y == $last_y) {
+                                    $is_valid = true;
+                                }
                             }
                     }
                 }
