@@ -61,8 +61,8 @@ class Pawn extends Piece {
             $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction];
             $check_piece_diagonal_left = $gridpositions[$x-1][$y+$direction];  
         }
-        //When at left or right of the board then check only one direction depending on which side
-        //player is on
+        //When at left or right of the board then check only one direction 
+        //depending on which side player is on
         if ($x == 0) {
             $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction]; 
         }
@@ -73,14 +73,14 @@ class Pawn extends Piece {
         if ($check_piece_diagonal_left !== null) {
             
             $piece_color = $check_piece_diagonal_left->get_color();
-            if ($piece_color===$this->other_players_color && !$check_piece_diagonal_left instanceof King) {
+            if ($piece_color == $this->other_players_color && !$check_piece_diagonal_left instanceof King) {
                 $is_valid = true;   
                 
                 if ($check_piece_diagonal_left instanceof Passant) {
                     $is_valid = false;
                     
                     //Check piece to the left side of this pawn  (is it other players pawn?)
-                    if ($piece_color===$this->other_players_color && $gridpositions[$x-1][$y] instanceof Pawn) {
+                    if ($piece_color == $this->other_players_color && $gridpositions[$x-1][$y] instanceof Pawn) {
                         //Previous move in game (other players pawn)
                         $last = $gridpositions[$x-1][$y]->get_last_move();
                         if (isset($last[0]) && isset($last[1])) {
@@ -102,20 +102,20 @@ class Pawn extends Piece {
 
         if ($check_piece_diagonal_right !== null) {
             $piece_color = $check_piece_diagonal_right->get_color();
-            if ($piece_color===$this->other_players_color && !$check_piece_diagonal_right instanceof King) {
+            if ($piece_color == $this->other_players_color && !$check_piece_diagonal_right instanceof King) {
                 $is_valid = true;   
                 
                 if ($check_piece_diagonal_right instanceof Passant) {
                     $is_valid = false;
                     
                     //Check piece to the right side of this pawn (is it other players pawn?)
-                    if ($piece_color===$this->other_players_color && $gridpositions[$x+1][$y] instanceof Pawn) {
+                    if ($piece_color == $this->other_players_color && $gridpositions[$x+1][$y] instanceof Pawn) {
                             //Previous move in game (other players pawn)
                             $last = $gridpositions[$x+1][$y]->get_last_move();
                             if (isset($last[0]) && isset($last[1])) {
                                 $last_x = $last[0];
                                 $last_y = $last[1];
-                                if ($x+1 === $last_x && $y == $last_y) {
+                                if ($x+1 == $last_x && $y == $last_y) {
                                     $is_valid = true;
                                 }
                             }
