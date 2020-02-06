@@ -243,6 +243,7 @@ class Game {
 
         
             //Is it possible to remove the piece that is checking?
+
             $attacker_can_be_removed = false;
         
             for($yp=0;$yp<8;$yp++) {
@@ -256,10 +257,6 @@ class Game {
                                 $this->status .= 'check get valid moves for piece at ' . $xp . ',' . $yp . '--> ' . json_encode($validmoves_piece,true) . '<br>' ;
                             }
                             
-                            if ($this->debug_mode === true) {
-                                $this->status .= '<pre>'.print_r($validmoves_piece, true).'</pre>';
-                            }
-
                             foreach($validmoves_piece as $vmk) {  
                                 if (isset($vmk[0]) && isset($vmk[1])) { 
                                     $xk = $vmk[0];
@@ -267,15 +264,16 @@ class Game {
 
                                     if ($xk == $x2 && $yk == $y2) {
                                         //If Pawn is attacking it must be diagonally
+                                        //(If on the same column as it as from the start move
+                                        //on the next iteration of this loop)
                                         if ($piece instanceof Pawn) {
-                                            if ($xk == $x2) {
+                                            if ($xk == $xp) { //xk = x in valid moves, xp = current x of pawn
                                                 continue;
                                             }
                                         }
-                                        //Cannot remove any king
-                                        //if ($this->debug_mode === true) {
+                                        if ($this->debug_mode === true) {
                                             $this->status .= 'attacker can be removed by another piece (piece located at ' . $xp.','.$yp . '<br>';
-                                        //}
+                                        }
                                         $attacker_can_be_removed = true;
                                         break;
                                     }
