@@ -306,6 +306,10 @@ class Game {
                 $checkerpiece_validmoves = $checkerpiece->get_validmoves($temp_gridpos, $x2, $y2, $original_king_x, $original_king_y);
 
                 foreach($checkerpiece_validmoves as $cpvm) {
+                    if(!isset($cpvm[0]) && !isset($cpvm[1])) {
+                        continue;
+                    }
+
                     $x_cpvm = $cpvm[0];
                     $y_cpvm = $cpvm[1];
                     

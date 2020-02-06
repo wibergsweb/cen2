@@ -9,11 +9,8 @@ class Passant extends Piece {
         return array();
     }
 
-    //Get chess character
+    //Get chess character (Passant acts like an invisible character on board)
     public function get_char() {
-        if ($this->color == 0) {
-            return '<span style="color:red;">P</span>';
-        }
-        return '<span style="color:red;">P</span>';
+        return '';
     } 
 }
