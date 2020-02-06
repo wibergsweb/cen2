@@ -242,147 +242,144 @@ class Game {
             }
 
         
-            
-
-            if (intval($possible_moves) == 0) {
-                if ($this->debug_mode === true) {
-                    $this->status .= 'POSSIBLE MOVES IS ZERO... IS IT POSSIBLE TO ATTACK THE CHECKING PIECE?';
-                }
-
-                //Is it possible to remove the piece that is checking?
-                $attacker_can_be_removed = false;
-            
-                for($yp=0;$yp<8;$yp++) {
-                    for($xp=0;$xp<8;$xp++) {
-                        $piece = $temp_gridpos[$xp][$yp];                        
-                        if ($piece !== null && !$piece instanceof King && $this->get_whosturn() == $piece->get_color()) {
-                            $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2, $y2);     
-                           
-                            if (!empty($validmoves_piece)) {
-                                if ($this->debug_mode === true) {
-                                    $this->status .= 'check get valid moves for piece at ' . $xp . ',' . $yp . '--> ' . json_encode($validmoves_piece,true) . '<br>' ;
-                                }
-                                
-                                foreach($validmoves_piece as $vmk) {  
-                                    if (isset($vmk[0]) && isset($vmk[1])) { 
-                                        $xk = $vmk[0];
-                                        $yk = $vmk[1];    
-                                        if ($xk == $x2 && $yk == $y2) {
-                                            //If Pawn is attacking it must be diagonally
-                                            if ($piece instanceof Pawn) {
-                                                if ($xk == $x2) {
-                                                    continue;
-                                                }
-                                            }
-                                            if ($this->debug_mode === true) {
-                                                $this->status .= 'attacker can be removed by another piece (piece located at ' . $xp.','.$yp . '<br>';
-                                            }
-                                            $attacker_can_be_removed = true;
-                                            break;
-                                        }      
-                                        
-                                        //If pieces is "in the way" then 
-                                        //break out of this loop
-                                        if ($temp_gridpos[$xk][$yk] !== null) {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if ($attacker_can_be_removed === false && $possible_moves == 0) {
-                    //Possible moves are zero and attacker cannot be removed, but
-                    //is it possible to move piece (in front of king maybe) so attacker is not checking anymore?  
-                    $temp_gridpos = array_slice($orignal_gridpos,0,count($orignal_gridpos));
-
-                    $temp_gridpos[$x1][$y1] = null;            //Set current grid to null
-                    $temp_gridpos[$x2][$y2] = $active_piece;   //Set new grid to actual piece that was in current square
-                    
-                    //We make the assumption that this is checkmate
-                    $checkmate = true;
-
-                    //Get valid moves of the piece that is checking
-                    $checkerpiece = $temp_gridpos[$x2][$y2];
-                    $checkerpiece_validmoves = $checkerpiece->get_validmoves($temp_gridpos, $x2, $y2, $original_king_x, $original_king_y);
-
-                    foreach($checkerpiece_validmoves as $cpvm) {
-                        $x_cpvm = $cpvm[0];
-                        $y_cpvm = $cpvm[1];
+            //Is it possible to remove the piece that is checking?
+            $attacker_can_be_removed = false;
+        
+            for($yp=0;$yp<8;$yp++) {
+                for($xp=0;$xp<8;$xp++) {
+                    $piece = $temp_gridpos[$xp][$yp];                        
+                    if ($piece !== null && !$piece instanceof King && $this->get_whosturn() == $piece->get_color()) {
+                        $validmoves_piece = $piece->get_validmoves($temp_gridpos, $xp, $yp, $x2, $y2);     
                         
-                        //Go through all board for user that is checked (and see if 
-                        //it's possible to move so it's not chess anymore
-                        for($yp=0;$yp<8;$yp++) {
-                            for($xp=0;$xp<8;$xp++) {
-                                $piece = $temp_gridpos[$xp][$yp];
-                                
-                                if ($piece !== null && !$piece instanceof King && $piece->get_color() == $this->get_whosturn()) {
-                                    //Each valid move for this player                                    
-                                    $validmoves_piece = $piece->get_validmoves($temp_gridpos,$xp,$yp,$x_cpvm,$y_cpvm);     
+                        if (!empty($validmoves_piece)) {
+                            if ($this->debug_mode === true) {
+                                $this->status .= 'check get valid moves for piece at ' . $xp . ',' . $yp . '--> ' . json_encode($validmoves_piece,true) . '<br>' ;
+                            }
+                            
+                            if ($this->debug_mode === true) {
+                                $this->status .= '<pre>'.print_r($validmoves_piece, true).'</pre>';
+                            }
 
-                                    //This tells that any piece of this user on board
-                                    //maybe can move to any square the checking piece can
-                                    if (!empty($validmoves_piece)) {                                       
+                            foreach($validmoves_piece as $vmk) {  
+                                if (isset($vmk[0]) && isset($vmk[1])) { 
+                                    $xk = $vmk[0];
+                                    $yk = $vmk[1];    
 
-                                        //Check in array (valid moves of current piece in loop)
-                                        $can_move_to_dest = false;
-                                        foreach($validmoves_piece as $vp) {
-   
-                                            if (!empty($vp[0]) && !empty($vp[1])) {
-                                                if ($vp[0] == $x_cpvm && $vp[1] == $y_cpvm) {
-                                                    $can_move_to_dest = true;
-                                                    break;
-                                                }   
+                                    if ($xk == $x2 && $yk == $y2) {
+                                        //If Pawn is attacking it must be diagonally
+                                        if ($piece instanceof Pawn) {
+                                            if ($xk == $x2) {
+                                                continue;
                                             }
                                         }
-
-                                        if ($can_move_to_dest === true) {
-
-                                            //It's confirmed that user can move to same square the checker piece can
-                                            //After that move, is it still chess? 
-                                            //If NO, then it's NOT checkmate
-                                            $temp_backup = array_slice($temp_gridpos, 0, count($temp_gridpos));
-
-                                            //Put current piece (in loop) temporarily at this position
-                                            $temp_gridpos[$x_cpvm][$y_cpvm] = $piece; 
-                                            $after_move = $checkerpiece->get_aftermove($temp_gridpos,$x2,$y2); 
-
-                                            $temp_gridpos = array_slice($temp_backup, 0, count($temp_backup));
-
-                                            if (!empty($after_move)) {
-                                                
-                                                //If not chess longer when a piece moves, then it cannot be not checkmate
-                                                if (stristr($after_move[1],'chess') === false) {
-                                                    if ($this->debug_mode === true) {
-                                                        $this->status .= 'NOT A CHECKMATE';
-                                                    }
-                                                    $checkmate = false;
-                                                }
-                                            }
-                                            
+                                        //Cannot remove any king
+                                        //if ($this->debug_mode === true) {
+                                            $this->status .= 'attacker can be removed by another piece (piece located at ' . $xp.','.$yp . '<br>';
+                                        //}
+                                        $attacker_can_be_removed = true;
                                         break;
-                                        }
-
-                                       
-                                   
                                     }
-
+                                    
+                                    //If pieces is "in the way" then 
+                                    //break out of this loop
+                                    if ($temp_gridpos[$xk][$yk] !== null) {
+                                        break;
+                                    }
                                 }
-                                
                             }
                         }
                     }
+                }
+            }
 
-                    if ($checkmate === true) {
-                        $this->status .= '<h2>CHECK MATE!!!!</h2>';
-                        $this->check_mate = true;
-                    }
+            if ($attacker_can_be_removed === false && $possible_moves == 0) {
+                //Possible moves are zero and attacker cannot be removed, but
+                //is it possible to move piece (in front of king maybe) so attacker is not checking anymore?  
+                $temp_gridpos = array_slice($orignal_gridpos,0,count($orignal_gridpos));
 
+                $temp_gridpos[$x1][$y1] = null;            //Set current grid to null
+                $temp_gridpos[$x2][$y2] = $active_piece;   //Set new grid to actual piece that was in current square
+                
+                //We make the assumption that this is checkmate
+                $checkmate = true;
+
+                //Get valid moves of the piece that is checking
+                $checkerpiece = $temp_gridpos[$x2][$y2];
+                $checkerpiece_validmoves = $checkerpiece->get_validmoves($temp_gridpos, $x2, $y2, $original_king_x, $original_king_y);
+
+                foreach($checkerpiece_validmoves as $cpvm) {
+                    $x_cpvm = $cpvm[0];
+                    $y_cpvm = $cpvm[1];
                     
+                    //Go through all board for user that is checked (and see if 
+                    //it's possible to move so it's not chess anymore
+                    for($yp=0;$yp<8;$yp++) {
+                        for($xp=0;$xp<8;$xp++) {
+                            $piece = $temp_gridpos[$xp][$yp];
+                            
+                            if ($piece !== null && !$piece instanceof King && $piece->get_color() == $this->get_whosturn()) {
+                                //Each valid move for this player                                    
+                                $validmoves_piece = $piece->get_validmoves($temp_gridpos,$xp,$yp,$x_cpvm,$y_cpvm);     
+
+                                //This tells that any piece of this user on board
+                                //maybe can move to any square the checking piece can
+                                if (!empty($validmoves_piece)) {                                       
+
+                                    //Check in array (valid moves of current piece in loop)
+                                    $can_move_to_dest = false;
+                                    foreach($validmoves_piece as $vp) {
+
+                                        if (!empty($vp[0]) && !empty($vp[1])) {
+                                            if ($vp[0] == $x_cpvm && $vp[1] == $y_cpvm) {
+                                                $can_move_to_dest = true;
+                                                break;
+                                            }   
+                                        }
+                                    }
+
+                                    if ($can_move_to_dest === true) {
+
+                                        //It's confirmed that user can move to same square the checker piece can
+                                        //After that move, is it still chess? 
+                                        //If NO, then it's NOT checkmate
+                                        $temp_backup = array_slice($temp_gridpos, 0, count($temp_gridpos));
+
+                                        //Put current piece (in loop) temporarily at this position
+                                        $temp_gridpos[$x_cpvm][$y_cpvm] = $piece; 
+                                        $after_move = $checkerpiece->get_aftermove($temp_gridpos,$x2,$y2); 
+
+                                        $temp_gridpos = array_slice($temp_backup, 0, count($temp_backup));
+
+                                        if (!empty($after_move)) {
+                                            
+                                            //If not chess longer when a piece moves, then it cannot be not checkmate
+                                            if (stristr($after_move[1],'chess') === false) {
+                                                if ($this->debug_mode === true) {
+                                                    $this->status .= 'NOT A CHECKMATE';
+                                                }
+                                                $checkmate = false;
+                                            }
+                                        }
+                                        
+                                    break;
+                                    }
+
+                                    
+                                
+                                }
+
+                            }
+                            
+                        }
+                    }
                 }
 
+                if ($checkmate === true) {
+                    $this->status .= '<h2>CHECK MATE!!!!</h2>';
+                    $this->check_mate = true;
+                }
+
+                
             }
 
         }
