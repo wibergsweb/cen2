@@ -152,11 +152,11 @@ class Pawn extends Piece {
             }
             if ($x<7) {
                 $check_piece_diagonal_right = $gridpositions[$x+1][$y+$direction];
-            }
+            }         
 
             if ($check_piece_diagonal_left !== null) {
                 $piece_color = $check_piece_diagonal_left->get_color();
-                if ($piece_color===$this->other_players_color && $check_piece_diagonal_left instanceof King) {
+                if ($piece_color == $this->other_players_color && $check_piece_diagonal_left instanceof King) {
                     $gridpositions[$x-1][$y+$direction]->is_chess();
                     return array($gridpositions,'chess by pawn',array($x-1,$y+$direction));
                 }
@@ -164,17 +164,17 @@ class Pawn extends Piece {
 
             if ($check_piece_diagonal_right !== null) {
                 $piece_color = $check_piece_diagonal_right->get_color();
-                if ($piece_color===$this->other_players_color && $check_piece_diagonal_right instanceof King) {
+                if ($piece_color == $this->other_players_color && $check_piece_diagonal_right instanceof King) {
                     $gridpositions[$x+1][$y+$direction]->is_chess();
-                    return array($gridpositions,'chess by pawn',array($x-1,$y+$direction));
+                    return array($gridpositions,'chess by pawn',array($x+1,$y+$direction));
                 }               
             }                 
         }
-        if ($y===0 && $direction === -1) {
+        if ($y == 0 && $direction == -1) {
             $this->wait_user = true; //Wait for user to select piece
             return array($gridpositions, 'Choose your piece');
         }
-        if ($y===7 && $direction === 1) {
+        if ($y == 7 && $direction == 1) {
             $this->wait_user = true; //Wait for user to select piece
             return array($gridpositions,'Choose your piece');
         }     
@@ -204,7 +204,9 @@ class Pawn extends Piece {
             }
             //Remove pawn
             $movepos_y = $y+$other_direction;
-            $gridpositions[$x][$movepos_y] = null;
+            if ($gridpositions[$x][$movepos_y] !== null) {               
+                $gridpositions[$x][$movepos_y] = null;
+            }
         }
         
         return array($gridpositions,'Pawn moved',array());
