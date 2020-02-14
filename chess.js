@@ -48,7 +48,8 @@ $( document ).ready(function() {
                  $('#statusboard').html(result.status);
                  turn = result.turn;
                  move_from = null;
-                 move_to = null;                  
+                 move_to = null;                 
+                 computermove(); 
                }
                else {
                   move_from = null;
@@ -70,6 +71,46 @@ $( document ).ready(function() {
       }
            
     });
+
+
+   function computermove() {
+      console.log('computermove now');
+      var obj = {};
+      if (turn == null) {turn = 0;}
+      obj.turn = turn;
+
+         $.ajax({
+            url: "./chess-mover.php",
+            data: { randommove : obj },
+            dataType: 'json',
+            method: 'POST',
+            success: function( result ) {
+               console.log(result);
+               if ( result.board.length > 0) {
+                  $('#chessboard').html(result.board);
+                  $('#statusboard').html(result.status);
+                  turn = result.turn;
+                  move_from = null;
+                  move_to = null;                  
+               }
+               else {
+                  move_from = null;
+                  move_to = null;    
+                  $('.square').css('opacity',1);
+                  alert('wrong move');
+               }
+            },
+            error: function( result ) {
+               console.log(result.responseText);
+               move_from = null;
+               move_to = null;      
+               $('.square').css('opacity',1); 
+               alert('error occured');               
+            }
+
+         });
+
+      }   
 
    //Start new game (reset game)
    $(document).on('click', '.reset', function() {

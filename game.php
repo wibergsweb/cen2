@@ -27,6 +27,10 @@ class Game {
         $this->boardobj->game_start();       
     }
 
+    public function get_board() {
+        return $this->boardobj;
+    }
+
     public function get_status() {
         return $this->status;    
     }
@@ -400,6 +404,9 @@ class Game {
         if ($make_move == false) {
             if ($this->debug_mode === true) {
                 $this->status .= '<h2>Invalid move. Nothing happens on board!</h2>';
+            }
+            else {
+                $this->status = 'redo';
             }              
             return $this;
         }              
