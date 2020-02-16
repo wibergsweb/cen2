@@ -4,7 +4,7 @@ var move_to = null;
 var turn = null;
 
 $( document ).ready(function() { 
-    
+ 
     //Initiate and load chessboard into div
 
     
@@ -12,9 +12,14 @@ $( document ).ready(function() {
        url: "./chess-mover.php",
        dataType: 'json',
        method: 'POST',
-       success: function( result ) {
+       success: function( result ) {          
             $('#chessboard').html(result.board);                
-       }
+       },
+       error: function( result ) {
+         console.log(result.responseText);         
+         alert('error occured');               
+      }
+
     });
 
    $("#chessboard").on('click', '.square', function() {

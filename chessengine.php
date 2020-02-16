@@ -11,6 +11,8 @@ class Chessengine {
     }
 
     public function get_randommove() {
+        $attempts = 0;
+
             //Which squares do contain a piece
             //that has the color of current player?
             $inclusions = array();
@@ -30,9 +32,6 @@ class Chessengine {
             //Randomize item from array inclusions
             //(because this array contains x,y-values with a piece and this turns color)
             //and fetch start position (x,y)
-
-            tryagain:
-
             $already_included_key = array();
             $found_valid = false;
             while ($found_valid === false) {
@@ -46,17 +45,6 @@ class Chessengine {
                         $already_included_key[] = $inclusions_key;
                         break;
                     }
-                }
-
-                //Is number of pieces done?
-                //If so then this is checkmate
-                if (count($already_included_key) == count($inclusions)) {
-                    $result = array();
-                    $result['board'] = $game_obj->draw();
-                    $result['turn'] = $this->turn; 
-                    $result['status'] = "CHECK MATE!!!";
-                    $result['moved'] = array($x1, $y1, $x2, $y2);                    
-                    return $result;        
                 }
 
                 $use_arritem = $inclusions[$inclusions_key];
@@ -82,13 +70,29 @@ class Chessengine {
             }
 
             $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn);
+            $_SESSION['game'] = serialize($game_obj);
 
             $status = $game_obj->get_status();
+
             if ($status == 'redo') {
-                goto tryagain;
+
+                //Is number of attempts less or equal to number of chess pieces on board?
+                $attempts++;
+                $this->get_randommove();
+
+                if ($attempts>100) {
+                    $found_valid = false;
+                    $status = 'no valid moves';
+                }
+            }
+            
+            
+            //If no valid moves found for computer, then it must be checkmate
+            if ($found_valid === false) {
+                $status = 'CHECK MATE!!!';
             }
 
-            $_SESSION['game'] = serialize($game_obj);
+
             $result = array();
             $result['board'] = $game_obj->draw();
             $result['turn'] = $game_obj->get_whosturn(); 

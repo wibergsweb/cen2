@@ -40,6 +40,13 @@ class Game {
         $make_move = false;
 
         if ($this->check_mate === true) {
+            $this->status = 'redo';
+            if ($this->whos_turn == 0) {
+                $this->whos_turn = 1;
+            }
+            else {
+                $this->whos_turn = 0;
+            }
             return $this;
         }
 
@@ -60,7 +67,8 @@ class Game {
 
         //Not this user's turn
         if (intval($turn) == intval($active_piece->get_color())) {
-            $this->status .= 'Its not your turn!';              
+            $this->status .= 'Its not your turn!';  
+            $this->status = 'redo';            
             return $this;
         }
 
