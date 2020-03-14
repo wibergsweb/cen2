@@ -70,17 +70,19 @@ class Chessengine {
             }
 
             $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn);
+
             $_SESSION['game'] = serialize($game_obj);
 
             $status = $game_obj->get_status();
 
+        
             if ($status == 'redo') {
 
                 //Is number of attempts less or equal to number of chess pieces on board?
                 $attempts++;
                 $this->get_randommove();
 
-                if ($attempts>100) {
+                if ($attempts>1100) {
                     $found_valid = false;
                     $status = 'no valid moves';
                 }

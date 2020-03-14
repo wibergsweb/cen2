@@ -54,7 +54,7 @@ $( document ).ready(function() {
                  turn = result.turn;
                  move_from = null;
                  move_to = null;                 
-                 computermove(); 
+                 //computermove(); 
                }
                else {
                   move_from = null;

@@ -4,7 +4,7 @@ class Pawn extends Piece {
     public $wait_user = false;
     public $passant_square = null;
     public $last_move = array();     //array of x,y
-
+    private $validmoves = array();
     
     public function get_last_move() {
         return $this->last_move;
@@ -126,12 +126,12 @@ class Pawn extends Piece {
                     $valid_moves[] = array($x+1,$y+$direction);
                 }
             }
-        }        
+        }      
         return $valid_moves;
     }
     
     
-    public function get_aftermove($gridpositions, $x,$y) {
+    public function get_aftermove($gridpositions, $x,$y) {        
         
         $return_str = 'Pawn moved ';
         $direction = $this->main_direction;
@@ -208,7 +208,7 @@ class Pawn extends Piece {
                 $gridpositions[$x][$movepos_y] = null;
             }
         }
-        
+
         return array($gridpositions,'Pawn moved',array());
     }
     

@@ -14,6 +14,7 @@ class Knight extends Piece {
     }    
     
     public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false,$check_other_players_color=true) {
+        $king_check = true;
         if ($check_other_players_color === true) {
             $compare_color = $this->other_players_color;
         }
@@ -87,14 +88,7 @@ class Knight extends Piece {
         $valid_moves[] = $this->check($gridpositions,$x,$y,-2,1,true);    
 
         $return_str = 'Knight moved ';
-        $chess = $this->check_chess($gridpositions,$valid_moves);
-        
-        $chess_arr = null;
-        if ($chess !== false) {
-            $return_str .= ':chess (' . $chess[0] . '-' . $chess[1] .')';
-            $chess_arr = array_slice($valid_moves,0,count($valid_moves));
-        }
-        
+        $chess_arr = null;        
          return array($gridpositions,$return_str,$chess_arr);
     }    
     

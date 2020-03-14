@@ -26,7 +26,7 @@ class King extends Piece {
         return $vm;
     }
     
-    public function get_validmoves($gridpositions, $x,$y,$x2,$y2,$check_other_players_color=true) {    
+    public function get_validmoves($gridpositions, $x,$y,$x2=0,$y2=0,$check_other_players_color=true) {    
         $valid_moves = array();
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,0);       //left
         $valid_moves[] = $this->check($gridpositions,$x,$y,1,0);        //right
