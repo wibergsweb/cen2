@@ -22,6 +22,10 @@ $( document ).ready(function() {
 
     });
 
+    $("#computermove").on('click', function() {    
+       computermove();
+    });
+
    $("#chessboard").on('click', '.square', function() {
       var closest_square = $(this).closest('.square');
       closest_square.css('opacity', 0.5);   
@@ -54,7 +58,7 @@ $( document ).ready(function() {
                  turn = result.turn;
                  move_from = null;
                  move_to = null;                 
-                 //computermove(); 
+                  //computermove(); 
                }
                else {
                   move_from = null;

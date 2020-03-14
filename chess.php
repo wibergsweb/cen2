@@ -15,5 +15,6 @@
         <div id="statusboard"></div>
         <div id="chessboard"></div>
         <button class="reset">Börja om från början</button>
+        <button id="computermove">Computer move</button>
     </body>
 </html>
