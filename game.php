@@ -156,11 +156,11 @@ class Game {
             }
 
             if ($is_chess['makemove'] === 'no') {
-                $this->status .= 'redo'; //Your in chess after your move so you can not go here.';
+                $this->status = 'redo'; //Your in chess after your move so you can not go here.';
                 return $this;
             }
             if ($is_chess['checked'] === 'yes') {
-                $this->status .= "CHESS!!!!";
+                $this->status = "CHESS!!!!";
             }
         }
 

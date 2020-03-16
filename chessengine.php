@@ -10,8 +10,7 @@ class Chessengine {
         $this->game = $game;
     }
 
-    public function get_randommove() {
-        $attempts = 0;
+    public function get_randommove() {        
 
             //Which squares do contain a piece
             //that has the color of current player?
@@ -28,65 +27,77 @@ class Chessengine {
                 }
             }
 
+            shuffle($inclusions);
 
             //Randomize item from array inclusions
             //(because this array contains x,y-values with a piece and this turns color)
             //and fetch start position (x,y)
-            $already_included_key = array();
             $found_valid = false;
-            while ($found_valid === false) {
-                
-                $use_key = false;
-                while ($use_key === false) {
-                    $inclusions_key = array_rand($inclusions, 1); //1 = return only one index from array
+            
+            error_log("inclusions=" . print_r($inclusions,true) . "\r\n",3,'attempts.log');
 
-                    if (in_array($inclusions_key, $already_included_key, true) !== true) {
-                        $use_key = true;
-                        $already_included_key[] = $inclusions_key;
-                        break;
-                    }
-                }
+            foreach ($inclusions as $inclusions_key=>$use_arritem) {
 
-                $use_arritem = $inclusions[$inclusions_key];
                 $x1 = $use_arritem[0];
                 $y1 = $use_arritem[1];
 
                 //Random move (x,y) to (random from valid moves of selected piece)
                 $selected_piece = $this->gp[$x1][$y1];
-                $valid_moves = $selected_piece->get_validmoves($this->gp, $x1, $y1, $x1, $y1);
+                $valid_moves = $selected_piece->get_validmoves($this->gp, $x1, $y1);
                 if (!empty($valid_moves)) {                    
-                    $valid_key = array_rand($valid_moves, 1);
-                    if ($valid_key != null) {
-                        $use_validitem = $valid_moves[$valid_key];                        
-                        if (isset($use_validitem[0]) && isset($use_validitem[1])) {
-                            $x2 = $use_validitem[0];
-                            $y2 = $use_validitem[1];    
-                            $found_valid = true;
-                        }
+                    foreach($valid_moves as $use_validitem) {
+                            if (isset($use_validitem[0]) && isset($use_validitem[1])) {
+                                $x2 = $use_validitem[0];
+                                $y2 = $use_validitem[1];    
+                                      
+                                error_log("TRY MOVE, x1:$x1, y1:$y1, x2:$x2, y2:$y2 \r\n",3,'attempts.log');
+
+                                //Chess after move? (Is it not possible, then fetch new random move)
+                                $is_chess = $selected_piece->check_chess($this->game, $this->gp, $selected_piece, $valid_moves, $x1, $y1, $x2, $y2);                            
+                                error_log("CHESS ARR=" . print_r($is_chess,true) . "\r\n",3,'attempts.log');
+                                
+                                $found_valid = true;
+                                if ($is_chess['makemove'] === 'no') {
+                                    error_log("makemove is no \r\n",3,'attempts.log');
+                                    $found_valid = false;
+                                }
+                                
+                                if ($found_valid === true) {
+                                    error_log("makemove at $inclusions_key \r\n",3,'attempts.log');
+                                    break;
+                                }
+                                
+                            }
                     }
                     
                 }
 
-            }
-
-            $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn);
-
-            $_SESSION['game'] = serialize($game_obj);
-
-            $status = $game_obj->get_status();
-
-        
-            if ($status == 'redo') {
-
-                //Is number of attempts less or equal to number of chess pieces on board?
-                $attempts++;
-                $this->get_randommove();
-
-                if ($attempts>1100) {
-                    $found_valid = false;
-                    $status = 'no valid moves';
+                if ($found_valid === true) {
+                    break;
                 }
+
             }
+
+            if ($this->gp[$x1][$y1] !== null) {
+                $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn);
+                
+                $selected_piece = $this->gp[$x1][$y1];
+                $valid_moves = $selected_piece->get_validmoves($this->gp, $x1, $y1);                
+                $is_chess = $selected_piece->check_chess($game_obj, $this->gp, $selected_piece, $valid_moves, $x1, $y1, $x2, $y2);                            
+                                                          
+                if ($is_chess['checked'] === 'yes') {
+                    error_log("x1=$x1, y1=$y1, x2=$x2, y2=$y2 \r\n",3,'attempts.log');
+                    error_log("still checked after chess \r\n",3,'attempts.log');
+                    $found_valid = false;
+                }
+
+                $this->game = $game_obj;   
+                $status = $game_obj->get_status();                 
+            }
+            else {
+                $status = null;
+            }
+
             
             
             //If no valid moves found for computer, then it must be checkmate
@@ -94,6 +105,7 @@ class Chessengine {
                 $status = 'CHECK MATE!!!';
             }
 
+            $_SESSION['game'] = serialize($game_obj);
 
             $result = array();
             $result['board'] = $game_obj->draw();
