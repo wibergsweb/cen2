@@ -33,7 +33,7 @@ class Chessengine {
             //(because this array contains x,y-values with a piece and this turns color)
             //and fetch start position (x,y)
             $found_valid = false;
-            
+                        
             error_log("inclusions=" . print_r($inclusions,true) . "\r\n",3,'attempts.log');
 
             foreach ($inclusions as $inclusions_key=>$use_arritem) {
@@ -54,8 +54,7 @@ class Chessengine {
 
                                 //Chess after move? (Is it not possible, then fetch new random move)
                                 $is_chess = $selected_piece->check_chess($this->game, $this->gp, $selected_piece, $valid_moves, $x1, $y1, $x2, $y2);                            
-                                error_log("CHESS ARR=" . print_r($is_chess,true) . "\r\n",3,'attempts.log');
-                                
+
                                 $found_valid = true;
                                 if ($is_chess['makemove'] === 'no') {
                                     error_log("makemove is no \r\n",3,'attempts.log');
@@ -78,40 +77,51 @@ class Chessengine {
 
             }
 
-            if ($this->gp[$x1][$y1] !== null) {
-                $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn);
-                
-                $selected_piece = $this->gp[$x1][$y1];
-                $valid_moves = $selected_piece->get_validmoves($this->gp, $x1, $y1);                
-                $is_chess = $selected_piece->check_chess($game_obj, $this->gp, $selected_piece, $valid_moves, $x1, $y1, $x2, $y2);                            
-                                                          
-                if ($is_chess['checked'] === 'yes') {
-                    error_log("x1=$x1, y1=$y1, x2=$x2, y2=$y2 \r\n",3,'attempts.log');
-                    error_log("still checked after chess \r\n",3,'attempts.log');
-                    $found_valid = false;
-                }
+            
+            $temp_game = serialize($this->game);
 
-                $this->game = $game_obj;   
-                $status = $game_obj->get_status();                 
+
+            if ($this->gp[$x1][$y1] !== null) {
+                $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn); 
+                $status = $game_obj->get_status();   
+                  
             }
             else {
                 $status = null;
             }
 
             
-            
-            //If no valid moves found for computer, then it must be checkmate
-            if ($found_valid === false) {
-                $status = 'CHECK MATE!!!';
-            }
-
-            $_SESSION['game'] = serialize($game_obj);
 
             $result = array();
             $result['board'] = $game_obj->draw();
             $result['turn'] = $game_obj->get_whosturn(); 
             $result['status'] = $status;
-            $result['moved'] = array($x1, $y1, $x2, $y2);            
+            $result['moved'] = array($x1, $y1, $x2, $y2);  
+
+            if (strtolower(stristr($result['status'],'chess'))) {
+                $result['status'] = "chess - wrong move";   
+                error_log("STILL CHESS AT " . print_r($result, true) . "\r\n",3,'attempts.log');
+
+                $game_obj = unserialize($temp_game);
+                $result['board'] = $game_obj->draw();
+
+                //Move back                      
+                $this->get_randommove();
+            } 
+            else {
+                error_log("STATUS= " . print_r($result, true) . "\r\n",3,'attempts.log');
+            }
+
+
+                        
+            //If no valid moves found for computer, then it must be checkmate
+            if ($found_valid === false) {
+                $status = 'CHECK MATE!!!';
+            }
+
+
+            $_SESSION['game'] = serialize($game_obj);
+
             return $result;
 
     }

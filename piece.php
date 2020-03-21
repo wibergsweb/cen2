@@ -34,7 +34,8 @@ abstract class Piece {
     public function check_chess(Game $game, $gridpositions, $active_piece, $valid_moves, $x1, $y1, $x2, $y2) {
         $checked_state = "no";
         $checkmate = "no";
-        $make_move ="yes";          
+        $make_move ="yes";     
+        $remove_piece = "no";     
         
         //Regenerate temporary gridpos (to make it possible to check if player is chess
         //after move without affecthing this actual object's gridpos)
@@ -54,7 +55,6 @@ abstract class Piece {
 
                     if (count($validmoves_piece)>0) {
                         error_log("possible checkerpiece at $xp,$yp" ."\r\n",3,'checks.log');
-                        //error_log("valid moves: " . print_r($validmoves_piece,true) ."\r\n",3,'checks.log');
                     }
 
                     foreach($validmoves_piece as $vmp) {
@@ -65,7 +65,7 @@ abstract class Piece {
                             
 
                             if ($cp !== null) {
-                                if ($cp->get_color() != $game->get_whosturn()) {
+                                if ($cp->get_color() == $game->get_whosturn()) {
                                     error_log("same color $xp,$yp and $xgrid,$ygrid" ."\r\n",3,'checks.log');
                                     break; //Same color. if some piece of same color is in it's way, just break out of this loop
                                 }  
@@ -87,6 +87,18 @@ abstract class Piece {
 
         if ($found_checked == 0) {
             $checked_state = "no";
+
+            $check_state = array();
+            $check_state['move'] = array($x1,$y1,$x2,$y2);
+            $check_state['checked'] = $checked_state;
+            $check_state['checkmate'] = $checkmate;
+            $check_state['makemove'] = $make_move;    
+            $check_state['possibletoremovepiece'] = $remove_piece;      
+             
+            error_log('checked state='. print_r($check_state,true),3,'checks.log');
+            return $check_state;
+
+            
         }
         else if ($found_checked>0) {  
                   
@@ -222,7 +234,7 @@ abstract class Piece {
                                         }
 
                                         error_log('attacker can be removed (' . $xk . ',' . $yk . ')'."\r\n",3,'checks.log');
-
+                                        $remove_piece = "yes";
                                         $attacker_can_be_removed = true;
                                         
                                     }
@@ -387,7 +399,7 @@ abstract class Piece {
                                 
     
                                 if ($cp !== null) {
-                                    if ($cp->get_color() == $game->get_whosturn()) {
+                                    if ($cp->get_color() != $game->get_whosturn()) {
                                         error_log("same color $xp,$yp and $xgrid,$ygrid" ."\r\n",3,'checks.log');
                                         break; //Same color. if some piece of same color is in it's way, just break out of this loop
                                     }  
@@ -415,7 +427,8 @@ abstract class Piece {
         $check_state['move'] = array($x1,$y1,$x2,$y2);
         $check_state['checked'] = $checked_state;
         $check_state['checkmate'] = $checkmate;
-        $check_state['makemove'] = $make_move;          
+        $check_state['makemove'] = $make_move;    
+        $check_state['possibletoremovepiece'] = $remove_piece;      
          
         error_log('checked state='. print_r($check_state,true),3,'checks.log');
         return $check_state;

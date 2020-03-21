@@ -147,6 +147,7 @@ class Game {
 
         if (isset($active_piece)) {
             $active_piece->last_move($x1,$y1);
+            $valid_moves = $active_piece->get_validmoves($this->gridpos, $x1, $y1);
             $is_chess = $active_piece->check_chess($this, $this->gridpos, $active_piece, $valid_moves, $x1, $y1, $x2, $y2);
             if ($is_chess['checkmate'] === 'yes') {
                 $this->checkmate = true;

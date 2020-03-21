@@ -11,6 +11,7 @@ class Pawn extends Piece {
     }
     
     public function check($gridpositions,$x,$y,$direction_x,$direction_y,$king_check=false,$check_other_players_color) {
+        $king_check = true;
         $vm = array();
         $xd = $x+$direction_x;
         $yd = $y+$direction_y;

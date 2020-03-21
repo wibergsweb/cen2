@@ -22,7 +22,7 @@ class Bishop extends Piece {
         $chess = null;
         $chess_arr = null;
         if ($chess !== false) {
-            $return_str .= ':chess (' . $chess[0] . '-' . $chess[1] .')';
+            $return_str .= 'chess (' . $chess[0] . '-' . $chess[1] .')';
             $chess_arr = array_slice($valid_moves,0,count($valid_moves));
         }
 
