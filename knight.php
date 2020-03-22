@@ -88,8 +88,14 @@ class Knight extends Piece {
         $valid_moves[] = $this->check($gridpositions,$x,$y,-2,1,true);    
 
         $return_str = 'Knight moved ';
-        $chess_arr = null;        
-         return array($gridpositions,$return_str,$chess_arr);
+        $chess = $this->check_chess(null, $gridpositions);
+        $chess_arr = null;
+        if ($chess !== false && isset($chess[0]) && isset($chess[1])) {
+            $return_str .= 'chess (' . $chess[0] . '-' . $chess[1] .')';
+            $chess_arr = array_slice($valid_moves,0,count($valid_moves));
+        }
+
+        return array($gridpositions,$return_str,$chess_arr);
     }    
     
     //Get chess character

@@ -3,40 +3,41 @@ class Chessengine {
     private $gp;
     private $turn;
     private $game;
+    private $inclusions = array();
 
     public function __construct(Game $game, array $gridpositions, $turn) {
         $this->gp = $gridpositions;
         $this->turn = $turn;
         $this->game = $game;
-    }
 
-    public function get_randommove() {        
-
-            //Which squares do contain a piece
-            //that has the color of current player?
-            $inclusions = array();
-            for($y=0;$y<8;$y++) {
-                for($x=0;$x<8;$x++) {
-                    if (isset($this->gp[$x][$y])) {
-                        $piece = $this->gp[$x][$y];
-                        //Make sure only select pieces of current color
-                        if ($piece !== null && $piece->get_color() != $this->turn) {
-                            $inclusions[] = array($x,$y);
-                        }
+        //Which squares do contain a piece
+        //that has the color of current player?     
+        for($y=0;$y<8;$y++) {
+            for($x=0;$x<8;$x++) {
+                if (isset($this->gp[$x][$y])) {
+                    $piece = $this->gp[$x][$y];
+                    //Make sure only select pieces of current color
+                    if ($piece !== null && $piece->get_color() != $this->turn) {
+                        $this->inclusions[] = array($x,$y);
                     }
                 }
             }
+        }
 
-            shuffle($inclusions);
+    }
+
+    public function get_randommove($attempt = 0) {        
+
+            //shuffle($inclusions);
 
             //Randomize item from array inclusions
             //(because this array contains x,y-values with a piece and this turns color)
             //and fetch start position (x,y)
             $found_valid = false;
                         
-            error_log("inclusions=" . print_r($inclusions,true) . "\r\n",3,'attempts.log');
+            error_log("ATTEMPT $attempt - inclusions=" . print_r($this->inclusions,true) . "\r\n",3,'attempts.log');
 
-            foreach ($inclusions as $inclusions_key=>$use_arritem) {
+            foreach ($this->inclusions as $inclusions_key=>$use_arritem) {
 
                 $x1 = $use_arritem[0];
                 $y1 = $use_arritem[1];
@@ -58,6 +59,9 @@ class Chessengine {
                                 $found_valid = true;
                                 if ($is_chess['makemove'] === 'no') {
                                     error_log("makemove is no \r\n",3,'attempts.log');
+                                    error_log("REMOVING!!! $inclusions_key \r\n",3,'attempts.log');
+                                    unset($this->inclusions[$inclusions_key]);
+
                                     $found_valid = false;
                                 }
                                 
@@ -67,14 +71,17 @@ class Chessengine {
                                 }
                                 
                             }
+
+                            
                     }
                     
                 }
 
-                if ($found_valid === true) {
-                    break;
-                }
 
+               
+
+
+               
             }
 
             
@@ -90,7 +97,7 @@ class Chessengine {
                 $status = null;
             }
 
-            
+        
 
             $result = array();
             $result['board'] = $game_obj->draw();
@@ -98,26 +105,12 @@ class Chessengine {
             $result['status'] = $status;
             $result['moved'] = array($x1, $y1, $x2, $y2);  
 
-            if (strtolower(stristr($result['status'],'chess'))) {
-                $result['status'] = "chess - wrong move";   
-                error_log("STILL CHESS AT " . print_r($result, true) . "\r\n",3,'attempts.log');
-
-                $game_obj = unserialize($temp_game);
-                $result['board'] = $game_obj->draw();
-
-                //Move back                      
-                $this->get_randommove();
-            } 
-            else {
-                error_log("STATUS= " . print_r($result, true) . "\r\n",3,'attempts.log');
+            if (strtolower(stristr($status, 'chess'))) {
+                $this->game = unserialize($temp_game);
+                $attempt++;
+                return $this->get_randommove($attempt);
             }
 
-
-                        
-            //If no valid moves found for computer, then it must be checkmate
-            if ($found_valid === false) {
-                $status = 'CHECK MATE!!!';
-            }
 
 
             $_SESSION['game'] = serialize($game_obj);

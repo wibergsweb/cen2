@@ -31,7 +31,7 @@ abstract class Piece {
         return $this->other_players_color;
     }    
     
-    public function check_chess(Game $game, $gridpositions, $active_piece, $valid_moves, $x1, $y1, $x2, $y2) {
+    public function check_chess(Game $game = null, $gridpositions, $active_piece = null, $valid_moves = null, $x1 = 0, $y1 = 0, $x2 = 0, $y2 = 0) {
         $checked_state = "no";
         $checkmate = "no";
         $make_move ="yes";     
@@ -65,15 +65,21 @@ abstract class Piece {
                             
 
                             if ($cp !== null) {
+                                if ($game !== null) {
                                 if ($cp->get_color() == $game->get_whosturn()) {
                                     error_log("same color $xp,$yp and $xgrid,$ygrid" ."\r\n",3,'checks.log');
                                     break; //Same color. if some piece of same color is in it's way, just break out of this loop
                                 }  
+                            }
 
                                 if ($cp instanceof King) {
                                     error_log("piece from $xp,$yp is checking $xgrid,$ygrid" ."\r\n",3,'checks.log');
                                     $checked_state = "yes";
                                     $found_checked++;
+                                    if ($game === null) {
+                                        return array($xgrid,$ygrid);
+                                    }
+
                                 }
 
                             }
@@ -84,6 +90,8 @@ abstract class Piece {
             }
         }
         $possible_moves = 1; //Possible moves for king if not going through any of loops below...
+
+        
 
         if ($found_checked == 0) {
             $checked_state = "no";
@@ -252,6 +260,8 @@ abstract class Piece {
             }
 
             if ($attacker_can_be_removed === false && $possible_moves == 0) {
+                $checkmate = "yes";
+                $checked_state = "yes";
                 error_log('attacker can not be removed'."\r\n",3,'checks.log');
 
                 //Possible moves are zero and attacker cannot be removed, but
@@ -265,10 +275,6 @@ abstract class Piece {
                 //Get valid moves of the piece that is checking
                 $checkerpiece = $temp_gridpos[$x2][$y2];
                 $checkerpiece_validmoves = $checkerpiece->get_validmoves($temp_gridpos, $x2, $y2);
-
-                
-                    //We make the assumption that this is checkmate
-                    $checkmate = "yes";
                
                 foreach($checkerpiece_validmoves as $cpvm) {
                     if(!isset($cpvm[0]) && !isset($cpvm[1])) {
@@ -300,7 +306,7 @@ abstract class Piece {
                                             if ($vp[0] == $x_cpvm && $vp[1] == $y_cpvm) {
                                                 $can_move_to_dest = true;
                                                 error_log("can move to destination $vp[0],$vp[1] \r\n",3,'checks.log');
-
+                                                $checkmate = "no";
                                                 break;
                                             }   
                                         }
@@ -350,6 +356,7 @@ abstract class Piece {
                                             //...if still chess checkmate is true
                                             if ($king_found === true) {
                                                 $checkmate = "no";
+                                                $checked_state = "yes";
                                                 break;
                                             }
 

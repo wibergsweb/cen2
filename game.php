@@ -161,7 +161,8 @@ class Game {
                 return $this;
             }
             if ($is_chess['checked'] === 'yes') {
-                $this->status = "CHESS!!!!";
+                $this->status = "chess";
+                return $this;
             }
         }
 

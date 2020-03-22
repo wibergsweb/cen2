@@ -159,7 +159,16 @@ class Pawn extends Piece {
                 $piece_color = $check_piece_diagonal_left->get_color();
                 if ($piece_color == $this->other_players_color && $check_piece_diagonal_left instanceof King) {
                     $gridpositions[$x-1][$y+$direction]->is_chess();
-                    return array($gridpositions,'chess by pawn',array($x-1,$y+$direction));
+
+                    $return_str = 'Chess by pawn';
+                    $chess = $this->check_chess(null, $gridpositions);
+                    $chess_arr = null;
+                    if ($chess !== false && isset($chess[0]) && isset($chess[1])) {
+                        $return_str .= 'chess ';
+                        $chess_arr = array();
+                    }
+            
+                    return array($gridpositions,$return_str,array($x-1,$y+$direction));
                 }
             }                
 
@@ -167,7 +176,16 @@ class Pawn extends Piece {
                 $piece_color = $check_piece_diagonal_right->get_color();
                 if ($piece_color == $this->other_players_color && $check_piece_diagonal_right instanceof King) {
                     $gridpositions[$x+1][$y+$direction]->is_chess();
-                    return array($gridpositions,'chess by pawn',array($x+1,$y+$direction));
+
+                    $return_str = 'Chess by pawn';
+                    $chess = $this->check_chess(null, $gridpositions);
+                    $chess_arr = null;
+                    if ($chess !== false && isset($chess[0]) && isset($chess[1])) {
+                        $return_str .= 'chess ';
+                        $chess_arr = array();
+                    }                    
+                    
+                    return array($gridpositions,return_str,array($x+1,$y+$direction));
                 }               
             }                 
         }
@@ -210,7 +228,16 @@ class Pawn extends Piece {
             }
         }
 
-        return array($gridpositions,'Pawn moved',array());
+        $return_str = 'Pawn moved';
+        $chess = $this->check_chess(null, $gridpositions);
+        $chess_arr = null;
+        if ($chess !== false && isset($chess[0]) && isset($chess[1])) {
+            $return_str .= 'chess ';
+            $chess_arr = array();
+        }
+
+        return array($gridpositions,$return_str,$chess_arr);
+
     }
     
     public function get_passantsquare() {

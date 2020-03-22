@@ -19,7 +19,12 @@ class Rook extends Piece {
         $valid_moves = array_merge($valid_moves1,$valid_moves2,$valid_moves3,$valid_moves4);
 
         $return_str = 'Rook moved '; 
+        $chess = $this->check_chess(null, $gridpositions);
         $chess_arr = null;
+        if ($chess !== false && isset($chess[0]) && isset($chess[1])) {
+            $return_str .= 'chess (' . $chess[0] . '-' . $chess[1] .')';
+            $chess_arr = array_slice($valid_moves,0,count($valid_moves));
+        }
 
          return array($gridpositions,$return_str,$chess_arr);
     }    
