@@ -6,23 +6,33 @@ class King extends Piece {
         $this->is_chess = true;
     } 
     
-    public function check($gridpositions,$x,$y,$direction_x,$direction_y) {
-        $vm = array();
+    public function check($gridpositions,$x,$y,$direction_x,$direction_y) {       
+        $vm = [];
         $xd = $x+$direction_x;
         $yd = $y+$direction_y;
+
         if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
             $check_piece = $gridpositions[$xd][$yd];
             if ($check_piece === null) {
-                $vm = array($xd,$yd);
+                $check_pawn1 = $gridpositions[$xd+1][$yd+$direction_y];
+                $check_pawn2 = $gridpositions[$xd-1][$yd+$direction_y];
+
+                //No pawn with other users color in front that attacks, so then this is a valid move
+                if (!$check_pawn1 instanceof Pawn && !$check_pawn2 instanceof Pawn) {
+                    //Check other users color todo
+                    if ($check_pawn1 !== null) {
+
+                    }
+                    $vm[] = array($xd,$yd);
+                }
             }   
-            else if ($check_piece !==null && $check_piece instanceof Passant) {
-                $vm = array($xd,$yd);
+            if ($check_piece !==null && $check_piece instanceof Passant) {
+                $vm[] = array($xd,$yd);
             }
-            else if ($check_piece !== null && $this->get_color() != $check_piece->get_color()) {
-                $vm = array($xd, $yd);
+            if ($check_piece !== null && ($this->get_color() != $check_piece->get_color()) ) {
+                $vm[] = array($xd, $yd);
             }
-        }
-        
+        }        
         return $vm;
     }
     
@@ -37,6 +47,16 @@ class King extends Piece {
         $valid_moves[] = $this->check($gridpositions,$x,$y,-1,1);       //check down left
         $valid_moves[] = $this->check($gridpositions,$x,$y,1,1);        //check down right      
         
+        $vm_temp = [];
+        foreach($valid_moves as $key=>$vm) {
+            if (!empty($vm[0])) {
+                $vm_temp[] = $vm[0];
+            }
+        }
+        $valid_moves = array_slice($vm_temp,0,count($vm_temp));
+
+        error_log("INITIAL VALID MOVES KING = " . print_r($valid_moves,true) . "\r\n",3,'attempts.log');
+
         //Castling
         $this->castling = false;
         if ($this->get_firstmove() === true && isset($x2) && isset($y2)) {
@@ -180,6 +200,9 @@ class King extends Piece {
             }
         }
 
+        error_log("VALID MOVES KING AFTER SOM CHECKING = " . print_r($valid_moves,true) . "\r\n",3,'attempts.log');
+
+
         foreach($valid_moves as $vm_key => $vm) {
             if (!empty($vm)) {
                 $vmx = $vm[0];
@@ -189,7 +212,7 @@ class King extends Piece {
                 //from this kings valid moves if they exist for this king
                 //(because king cannot stand beside the other king)
                 foreach($validmoves_otherking as $vmok_key => $vmok) {
-                    if (!empty($vmok)) {
+                    if (!empty($vmok) && !empty($vmok[0]) && !empty($vmok[1])) {
                         $vmok_x = $vmok[0];
                         $vmok_y = $vmok[1];
                         if ($vmok_x == $vmx && $vmok_y == $vmy) {
