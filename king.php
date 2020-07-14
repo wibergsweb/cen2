@@ -67,7 +67,7 @@ class King extends Piece {
         }
         $valid_moves = array_slice($vm_temp,0,count($vm_temp));
 
-        error_log("INITIAL VALID MOVES KING = " . print_r($valid_moves,true) . "\r\n",3,'attempts.log');
+        //error_log("INITIAL VALID MOVES KING = " . print_r($valid_moves,true) . "\r\n",3,'attempts.log');
 
         //Castling
         $this->castling = false;
@@ -211,9 +211,6 @@ class King extends Piece {
                 }
             }
         }
-
-        error_log("VALID MOVES KING AFTER SOM CHECKING = " . print_r($valid_moves,true) . "\r\n",3,'attempts.log');
-
 
         foreach($valid_moves as $vm_key => $vm) {
             if (!empty($vm)) {

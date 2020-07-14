@@ -28,7 +28,8 @@ class Chessengine {
     public function get_randommove($attempt = 0) {        
             //Create an array with all valid moves both FROM position and TO position
             $all_validmoves = [];
-            $in_chess_aftermove = false;
+            $in_chess_aftermove = true;
+            
             foreach ($this->inclusions as $inclusions_key=>$use_arritem) {               
 
                 $x1 = $use_arritem[0];
@@ -36,13 +37,10 @@ class Chessengine {
 
                 //Random move (x,y) to (random from valid moves of selected piece)
                 $selected_piece = $this->gp[$x1][$y1];
-
                 $valid_moves = $selected_piece->get_validmoves($this->gp, $x1, $y1);       
 
-                if (!empty($valid_moves) && !empty($valid_moves[0]) && !empty($valid_moves[1]) ) {      
+                if (!empty($valid_moves) && !empty($valid_moves[0])) {      
                     foreach($valid_moves as $use_validitem) {
-                        //error_log("CHECKING ITEM" . print_r($use_validitem,true) . "\r\n",3,'attempts.log');
-
                             $x2 = $use_validitem[0];
                             $y2 = $use_validitem[1];  
        
@@ -53,14 +51,11 @@ class Chessengine {
                             $after_move = $selected_piece->get_aftermove($fake_gridpositions,$x2,$y2);
                             $am = $after_move[1];
 
-  
-
                             if (stristr($am,'chess') !== false && get_class($selected_piece) != 'King') {
                                 //If computer is in chess after computermove
-                                $in_chess_aftermove = true;
                             }
                             else {
-                                //If computer is NOT in chess after computermove, then add availability
+                                //If computer is NOT in chess after computermove, then add availabile move
                                 $all_validmoves[] = [$x1,$y1,$x2,$y2, $after_move[1]];
                                 $in_chess_aftermove = false;
                             }
@@ -72,39 +67,47 @@ class Chessengine {
 
             
 
-            //User has put computer in chess. 
-            //Computer king must move out from it somehow
+            //After attempted computer's move, computer is still in chess.
             if ($in_chess_aftermove === true) {
-                error_log("COMPUTER IS IN CHESS AFTER USERS MOVES \r\n",3,'attempts.log');
-
                 $new_validmoves = [];
 
                 //Find all valid moves for king
+                $kn = 0;
                 foreach($all_validmoves as $key=>$vm) {
-                    if ( strstr($vm[4], 'King') !== false && strstr($vm[4], 'chess') !== false ) {
-                        $new_validmoves[] = $vm;                            
-                    }             
+                    if ( strstr($vm[4], 'King') !== false && strstr($vm[4], 'chess') === false) {
+                        $new_validmoves[$kn] = $vm;                            
+                    }   
+                    if ( strstr($vm[4], 'King') !== false && strstr($vm[4], 'chess') !== false) {
+                        unset($new_validmoves[$kn]);                            
+                    }                      
+                    $kn++;
                 }
 
-                //All kings are chess and every position is in check
-                //then it's mate (is shown after computer tries to move)
-                if (count($all_validmoves) == count($new_validmoves)) {
-                    $result = array();
-                    $game_obj = $this->game;
-                    $status = 'CHESS MATE';                    
-                    $result['board'] = $game_obj->draw();
-                    $result['turn'] = $game_obj->get_whosturn(); 
-                    $result['status'] = $status;
-                    $result['moved'] = array($x1, $y1, $x2, $y2);  
-                    $_SESSION['game'] = serialize($game_obj);
-                    return $result;                    
-                }
-
-                //If no valid moves for king found, pick another piece that does not make computer
-                //be in chess
+                //Make these moves valid so computers king can be "unchessed"
                 if (!empty($new_validmoves)) {
                     $all_validmoves = array_slice( $new_validmoves,0,count($new_validmoves) );
                 }
+            }
+
+            //Remove all items where king and chess after move
+            foreach($all_validmoves as $key=>$vm) {
+                if ( strstr($vm[4], 'King') !== false && strstr($vm[4], 'chess') !== false) {
+                    unset($all_validmoves[$key]);                            
+                }                      
+            }
+            $all_validmoves = array_values($all_validmoves); //So index starts with zero (important further down in code)
+
+            
+            //Computer can not move, it's mate
+            if (count($all_validmoves) == 0) {
+                $result = array();
+                $game_obj = $this->game;
+                $result['board'] = $game_obj->draw();
+                $result['turn'] = $game_obj->get_whosturn(); 
+                $result['status'] = 'CHESS MATE';       
+                $result['moved'] = array($x1, $y1, $x2, $y2);  
+                $_SESSION['game'] = serialize($game_obj);
+                return $result;                    
             }
 
             error_log("all valid moves AFTER= " . print_r($all_validmoves,true) . "\r\n",3,'attempts.log');
@@ -114,7 +117,7 @@ class Chessengine {
                 $r = array_rand($all_validmoves);
             }
             else {
-                $r = 0;
+                $r = 0; //First item
             }
 
             $x1 = $all_validmoves[$r][0];
@@ -130,14 +133,6 @@ class Chessengine {
             //and do the actual move
             $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn); 
             $status = $game_obj->get_status();
-            if ($status == 'chess') {
-                //if ($attempt == 3) {
-                //    error_log("END ATTEMPTS" . "\r\n",3,'attempts.log');
-                //    exit;
-                //}
-                //return $this->get_randommove($attempt++);
-            }
-
             $result = array();
             $result['board'] = $game_obj->draw();
             $result['turn'] = $game_obj->get_whosturn(); 
