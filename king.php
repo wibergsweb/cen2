@@ -14,15 +14,27 @@ class King extends Piece {
         if ($xd>-1 && $xd<8 && $yd>-1 && $yd<8) {
             $check_piece = $gridpositions[$xd][$yd];
             if ($check_piece === null) {
-                $check_pawn1 = $gridpositions[$xd+1][$yd+$direction_y];
-                $check_pawn2 = $gridpositions[$xd-1][$yd+$direction_y];
+                $check_pawn1 = null;
+                $check_pawn2 = null;
+                if (isset($gridpositions[$xd+1][$yd+$direction_y]) ) {
+                    $check_pawn1 = $gridpositions[$xd+1][$yd+$direction_y];
+                }
+
+                if ( isset($gridpositions[$xd-1][$yd+$direction_y]) ) {
+                    $check_pawn2 = $gridpositions[$xd-1][$yd+$direction_y];
+                }
+
+                $nopawns_attacking = true;
 
                 //No pawn with other users color in front that attacks, so then this is a valid move
-                if (!$check_pawn1 instanceof Pawn && !$check_pawn2 instanceof Pawn) {
-                    //Check other users color todo
-                    if ($check_pawn1 !== null) {
+                if ($check_pawn1 !== null && $check_pawn1 instanceof Pawn && ($this->color != $check_pawn1->get_color()) ) {
+                    $nopawns_attacking = false;
+                }
+                if ($check_pawn2 !== null && $check_pawn2 instanceof Pawn && ($this->color != $check_pawn2->get_color()) ) {
+                    $nopawns_attacking = false;
+                }
 
-                    }
+                if ( $nopawns_attacking === true) {
                     $vm[] = array($xd,$yd);
                 }
             }   

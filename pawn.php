@@ -185,7 +185,7 @@ class Pawn extends Piece {
                         $chess_arr = array();
                     }                    
                     
-                    return array($gridpositions,return_str,array($x+1,$y+$direction));
+                    return array($gridpositions, $return_str,array($x+1,$y+$direction));
                 }               
             }                 
         }

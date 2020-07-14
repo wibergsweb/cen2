@@ -39,9 +39,9 @@ class Chessengine {
 
                 $valid_moves = $selected_piece->get_validmoves($this->gp, $x1, $y1);       
 
-                if (!empty($valid_moves) && !empty($valid_moves[0]) ) {      
+                if (!empty($valid_moves) && !empty($valid_moves[0]) && !empty($valid_moves[1]) ) {      
                     foreach($valid_moves as $use_validitem) {
-                        error_log("CHECKING ITEM" . print_r($use_validitem,true) . "\r\n",3,'attempts.log');
+                        //error_log("CHECKING ITEM" . print_r($use_validitem,true) . "\r\n",3,'attempts.log');
 
                             $x2 = $use_validitem[0];
                             $y2 = $use_validitem[1];  
@@ -62,6 +62,7 @@ class Chessengine {
                             else {
                                 //If computer is NOT in chess after computermove, then add availability
                                 $all_validmoves[] = [$x1,$y1,$x2,$y2, $after_move[1]];
+                                $in_chess_aftermove = false;
                             }
                     }
                     
@@ -69,18 +70,34 @@ class Chessengine {
                 }
             }
 
-            error_log("all valid moves BEFORE= " . print_r($all_validmoves,true) . "\r\n",3,'attempts.log');
+            
 
             //User has put computer in chess. 
             //Computer king must move out from it somehow
             if ($in_chess_aftermove === true) {
+                error_log("COMPUTER IS IN CHESS AFTER USERS MOVES \r\n",3,'attempts.log');
+
                 $new_validmoves = [];
 
                 //Find all valid moves for king
                 foreach($all_validmoves as $key=>$vm) {
-                    if ( strstr($vm[4], 'King') !== false  ) {
+                    if ( strstr($vm[4], 'King') !== false && strstr($vm[4], 'chess') !== false ) {
                         $new_validmoves[] = $vm;                            
                     }             
+                }
+
+                //All kings are chess and every position is in check
+                //then it's mate (is shown after computer tries to move)
+                if (count($all_validmoves) == count($new_validmoves)) {
+                    $result = array();
+                    $game_obj = $this->game;
+                    $status = 'CHESS MATE';                    
+                    $result['board'] = $game_obj->draw();
+                    $result['turn'] = $game_obj->get_whosturn(); 
+                    $result['status'] = $status;
+                    $result['moved'] = array($x1, $y1, $x2, $y2);  
+                    $_SESSION['game'] = serialize($game_obj);
+                    return $result;                    
                 }
 
                 //If no valid moves for king found, pick another piece that does not make computer
@@ -113,6 +130,13 @@ class Chessengine {
             //and do the actual move
             $game_obj = $this->game->move_to($x1,$y1,$x2,$y2,$this->turn); 
             $status = $game_obj->get_status();
+            if ($status == 'chess') {
+                //if ($attempt == 3) {
+                //    error_log("END ATTEMPTS" . "\r\n",3,'attempts.log');
+                //    exit;
+                //}
+                //return $this->get_randommove($attempt++);
+            }
 
             $result = array();
             $result['board'] = $game_obj->draw();
